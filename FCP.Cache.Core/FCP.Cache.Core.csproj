@@ -40,9 +40,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BaseCacheProvider.cs" />
+    <Compile Include="BaseDistributedCacheProvider.cs" />
+    <Compile Include="Common\CacheEntry.cs" />
+    <Compile Include="Common\CacheEntryOptions.cs" />
+    <Compile Include="Extensions\CacheProviderExtensions.cs" />
+    <Compile Include="Extensions\DistributedCacheProviderExtensions.cs" />
+    <Compile Include="Common\ExpirationMode.cs" />
     <Compile Include="Interfaces\ICacheProvider.cs" />
     <Compile Include="Interfaces\IDistributedCacheProvider.cs" />
-    <Compile Include="Interfaces\IMemoryCacheProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

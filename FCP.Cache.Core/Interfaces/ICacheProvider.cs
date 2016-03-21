@@ -19,7 +19,7 @@ namespace FCP.Cache
         /// <returns></returns>
         TValue Get<TValue>(TKey key, string region);
 
-        bool Set<TValue>(TKey key, TValue value);
+        void Set<TValue>(TKey key, TValue value, CacheEntryOptions options);
 
         /// <summary>
         /// Sets a value for the specified key and region
@@ -29,9 +29,9 @@ namespace FCP.Cache
         /// <param name="value"></param>
         /// <param name="region">The cache region</param>
         /// <returns></returns>
-        bool Set<TValue>(TKey key, TValue value, string region);
+        void Set<TValue>(TKey key, TValue value, CacheEntryOptions options, string region);
 
-        bool Remove(TKey key);
+        void Remove(TKey key);
 
         /// <summary>
         /// Removes a value for the specified key and region
@@ -39,7 +39,7 @@ namespace FCP.Cache
         /// <param name="key"></param>
         /// <param name="region">The cache region</param>
         /// <returns></returns>
-        bool Remove(TKey key, string region);
+        void Remove(TKey key, string region);
 
         void Clear();
 

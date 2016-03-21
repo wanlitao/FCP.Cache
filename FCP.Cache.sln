@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FCP.Cache.Core", "FCP.Cache
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FCP.Cache.Redis", "FCP.Cache.Redis\FCP.Cache.Redis.csproj", "{26424A41-2627-46DA-B308-5689B6AADED3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FCP.Cache.Memory", "FCP.Cache.Memory\FCP.Cache.Memory.csproj", "{9244B4A7-CC75-4261-8396-1BB8AB9913D3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{26424A41-2627-46DA-B308-5689B6AADED3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{26424A41-2627-46DA-B308-5689B6AADED3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{26424A41-2627-46DA-B308-5689B6AADED3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9244B4A7-CC75-4261-8396-1BB8AB9913D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9244B4A7-CC75-4261-8396-1BB8AB9913D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9244B4A7-CC75-4261-8396-1BB8AB9913D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9244B4A7-CC75-4261-8396-1BB8AB9913D3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

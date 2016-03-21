@@ -5,10 +5,10 @@ namespace FCP.Cache
     /// <summary>
     /// base interface fro distributed cache provider
     /// </summary>
-    public interface IDistributedCacheProvider<TKey> : ICacheProvider<TKey>
+    public interface IDistributedCacheProvider : ICacheProvider<string>
     {
         #region async methods
-        Task<TValue> GetAsync<TValue>(TKey key);
+        Task<TValue> GetAsync<TValue>(string key);
 
         /// <summary>
         /// Gets a value for the specified key and region
@@ -17,9 +17,9 @@ namespace FCP.Cache
         /// <param name="key"></param>
         /// <param name="region">The cache region</param>
         /// <returns></returns>
-        Task<TValue> GetAsync<TValue>(TKey key, string region);
+        Task<TValue> GetAsync<TValue>(string key, string region);
 
-        Task<bool> SetAsync<TValue>(TKey key, TValue value);
+        Task SetAsync<TValue>(string key, TValue value, CacheEntryOptions options);
 
         /// <summary>
         /// Sets a value for the specified key and region
@@ -29,9 +29,9 @@ namespace FCP.Cache
         /// <param name="value"></param>
         /// <param name="region">The cache region</param>
         /// <returns></returns>
-        Task<bool> SetAsync<TValue>(TKey key, TValue value, string region);
+        Task SetAsync<TValue>(string key, TValue value, CacheEntryOptions options, string region);
 
-        Task<bool> RemoveAsync(TKey key);
+        Task RemoveAsync(string key);
 
         /// <summary>
         /// Removes a value for the specified key and region
@@ -39,7 +39,7 @@ namespace FCP.Cache
         /// <param name="key"></param>
         /// <param name="region">The cache region</param>
         /// <returns></returns>
-        Task<bool> RemoveAsync(TKey key, string region);
+        Task RemoveAsync(string key, string region);
 
         Task ClearAsync();
 
