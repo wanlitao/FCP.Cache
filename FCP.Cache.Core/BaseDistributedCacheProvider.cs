@@ -5,69 +5,90 @@ namespace FCP.Cache
 {
     public abstract class BaseDistributedCacheProvider : BaseCacheProvider<string>, IDistributedCacheProvider
     {
-        public override TValue Get<TValue>(string key, string region)
+        #region Get
+        public async Task<TValue> GetAsync<TValue>(string key)
         {
-            throw new NotImplementedException();
+            return await GetAsync<TValue>(key, null).ConfigureAwait(false);
         }
 
-        public Task<TValue> GetAsync<TValue>(string key)
+        public virtual async Task<TValue> GetAsync<TValue>(string key, string region)
         {
-            return GetAsync<TValue>(key, null);
+            var cacheEntry = await GetCacheEntryAsync<TValue>(key, region).ConfigureAwait(false);
+
+            if (cacheEntry != null && string.Compare(cacheEntry.Key, key, true) == 0)
+            {
+                return cacheEntry.Value;
+            }
+            return default(TValue);            
         }
 
-        public virtual Task<TValue> GetAsync<TValue>(string key, string region)
+        protected virtual async Task<CacheEntry<string, TValue>> GetCacheEntryAsync<TValue>(string key, string region)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrEmpty(key))
+                throw new ArgumentNullException(nameof(key));
+
+            return await GetCacheEntryInternalAsync<TValue>(key, region).ConfigureAwait(false);
         }
 
-        public override void Set<TValue>(string key, TValue value, CacheEntryOptions options, string region)
+        protected abstract Task<CacheEntry<string, TValue>> GetCacheEntryInternalAsync<TValue>(string key, string region);
+        #endregion
+
+        #region Set
+        public async Task SetAsync<TValue>(string key, TValue value, CacheEntryOptions options)
         {
-            throw new NotImplementedException();
+            await SetAsync<TValue>(key, value, options, null).ConfigureAwait(false);
         }
 
-        public Task SetAsync<TValue>(string key, TValue value, CacheEntryOptions options)
+        public virtual async Task SetAsync<TValue>(string key, TValue value, CacheEntryOptions options, string region)
         {
-            return SetAsync<TValue>(key, value, options, null);
+            if (string.IsNullOrEmpty(key))
+                throw new ArgumentNullException(nameof(key));
+
+            var cacheEntry = new CacheEntry<string, TValue>(key, region, value, options);
+
+            await SetAsync(cacheEntry).ConfigureAwait(false);
         }
 
-        public virtual Task SetAsync<TValue>(string key, TValue value, CacheEntryOptions options, string region)
+        protected virtual async Task SetAsync<TValue>(CacheEntry<string, TValue> entry)
         {
-            throw new NotImplementedException();
-        }        
+            if (entry == null)
+                throw new ArgumentNullException(nameof(entry));
 
-        public override void Remove(string key, string region)
-        {
-            throw new NotImplementedException();
+            await SetInternalAsync(entry).ConfigureAwait(false);
         }
 
-        public Task RemoveAsync(string key)
+        protected abstract Task SetInternalAsync<TValue>(CacheEntry<string, TValue> entry);
+        #endregion
+
+        #region Remove
+        public async Task RemoveAsync(string key)
         {
-            return RemoveAsync(key, null);
+            await RemoveAsync(key, null).ConfigureAwait(false);
         }
 
-        public virtual Task RemoveAsync(string key, string region)
+        public virtual async Task RemoveAsync(string key, string region)
         {
-            throw new NotImplementedException();
-        }        
+            if (string.IsNullOrEmpty(key))
+                throw new ArgumentNullException(nameof(key));
 
-        public override void Clear()
-        {
-            throw new NotImplementedException();
+            await RemoveInternalAsync(key, region).ConfigureAwait(false);
         }
 
-        public virtual Task ClearAsync()
+        protected abstract Task RemoveInternalAsync(string key, string region);
+        #endregion
+
+        #region Clear
+        public abstract Task ClearAsync();
+
+        public virtual async Task ClearRegionAsync(string region)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrEmpty(region))
+                throw new ArgumentNullException(nameof(region));
+
+            await ClearRegionInternalAsync(region).ConfigureAwait(false);
         }
 
-        public override void ClearRegion(string region)
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual Task ClearRegionAsync(string region)
-        {
-            throw new NotImplementedException();
-        }
+        protected abstract Task ClearRegionInternalAsync(string region);              
+        #endregion
     }
 }

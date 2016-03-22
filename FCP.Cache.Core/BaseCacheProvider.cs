@@ -4,6 +4,7 @@ namespace FCP.Cache
 {
     public abstract class BaseCacheProvider<TKey> : ICacheProvider<TKey>
     {
+        #region Get
         public TValue Get<TValue>(TKey key)
         {
             return Get<TValue>(key, null);
@@ -11,19 +12,54 @@ namespace FCP.Cache
 
         public virtual TValue Get<TValue>(TKey key, string region)
         {
-            throw new NotImplementedException();
+            var cacheEntry = GetCacheEntry<TValue>(key, region);
+
+            if (cacheEntry != null && cacheEntry.Key.Equals(key))
+            {
+                return cacheEntry.Value;
+            }
+            return default(TValue);
         }
 
+        protected virtual CacheEntry<TKey, TValue> GetCacheEntry<TValue>(TKey key, string region)
+        {
+            if (key == null)
+                throw new ArgumentNullException(nameof(key));
+
+            return GetCacheEntryInternal<TValue>(key, region);
+        }
+
+        protected abstract CacheEntry<TKey, TValue> GetCacheEntryInternal<TValue>(TKey key, string region);
+        #endregion
+
+        #region Set
         public void Set<TValue>(TKey key, TValue value, CacheEntryOptions options)
         {
-            Set<TValue>(key, value, options, null);
+            Set(key, value, options, null);
         }
 
         public virtual void Set<TValue>(TKey key, TValue value, CacheEntryOptions options, string region)
         {
-            throw new NotImplementedException();
+            if (key == null)
+                throw new ArgumentNullException(nameof(key));
+
+            var cacheEntry = new CacheEntry<TKey, TValue>(key, region, value, options);
+
+            Set(cacheEntry);
         }
 
+        protected virtual void Set<TValue>(CacheEntry<TKey, TValue> entry)
+        {
+            if (entry == null)
+                throw new ArgumentNullException(nameof(entry));
+
+            SetInternal(entry);
+        }
+
+        protected abstract void SetInternal<TValue>(CacheEntry<TKey, TValue> entry);
+        #endregion
+
+        #region Remove
         public void Remove(TKey key)
         {
             Remove(key, null);
@@ -31,18 +67,28 @@ namespace FCP.Cache
 
         public virtual void Remove(TKey key, string region)
         {
-            throw new NotImplementedException();
+            if (key == null)
+                throw new ArgumentNullException(nameof(key));
+
+            RemoveInternal(key, region);
         }
 
-        public virtual void Clear()
-        {
-            throw new NotImplementedException();
-        }
+        protected abstract void RemoveInternal(TKey key, string region);
+        #endregion
+
+        #region Clear
+        public abstract void Clear();
 
         public virtual void ClearRegion(string region)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrEmpty(region))
+                throw new ArgumentNullException(nameof(region));
+
+            ClearRegionInternal(region);
         }
+
+        protected abstract void ClearRegionInternal(string region);
+        #endregion
 
         #region IDisposable Support
         private bool disposedValue = false; // 要检测冗余调用
