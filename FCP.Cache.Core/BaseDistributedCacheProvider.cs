@@ -27,6 +27,8 @@ namespace FCP.Cache
             if (string.IsNullOrEmpty(key))
                 throw new ArgumentNullException(nameof(key));
 
+            CheckDisposed();
+
             return await GetCacheEntryInternalAsync<TValue>(key, region).ConfigureAwait(false);
         }
 
@@ -54,6 +56,8 @@ namespace FCP.Cache
             if (entry == null)
                 throw new ArgumentNullException(nameof(entry));
 
+            CheckDisposed();
+
             await SetInternalAsync(entry).ConfigureAwait(false);
         }
 
@@ -71,6 +75,8 @@ namespace FCP.Cache
             if (string.IsNullOrEmpty(key))
                 throw new ArgumentNullException(nameof(key));
 
+            CheckDisposed();
+
             await RemoveInternalAsync(key, region).ConfigureAwait(false);
         }
 
@@ -78,12 +84,22 @@ namespace FCP.Cache
         #endregion
 
         #region Clear
-        public abstract Task ClearAsync();
+        public virtual async Task ClearAsync()
+        {
+            CheckDisposed();
+
+            await ClearInternalAsync().ConfigureAwait(false);
+        }
+
+        protected abstract Task ClearInternalAsync();
+
 
         public virtual async Task ClearRegionAsync(string region)
         {
             if (string.IsNullOrEmpty(region))
                 throw new ArgumentNullException(nameof(region));
+
+            CheckDisposed();
 
             await ClearRegionInternalAsync(region).ConfigureAwait(false);
         }

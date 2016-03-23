@@ -42,7 +42,12 @@ namespace FCP.Cache.Redis
         #endregion
 
         #region Clear
-        public override void Clear()
+        protected override void ClearInternal()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override async Task ClearInternalAsync()
         {
             throw new NotImplementedException();
         }
@@ -51,12 +56,7 @@ namespace FCP.Cache.Redis
         {
             throw new NotImplementedException();
         }
-
-        public override async Task ClearAsync()
-        {
-            throw new NotImplementedException();
-        }
-
+        
         protected override async Task ClearRegionInternalAsync(string region)
         {
             throw new NotImplementedException();

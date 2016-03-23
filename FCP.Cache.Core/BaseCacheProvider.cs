@@ -26,6 +26,8 @@ namespace FCP.Cache
             if (key == null)
                 throw new ArgumentNullException(nameof(key));
 
+            CheckDisposed();
+
             return GetCacheEntryInternal<TValue>(key, region);
         }
 
@@ -41,7 +43,7 @@ namespace FCP.Cache
         public virtual void Set<TValue>(TKey key, TValue value, CacheEntryOptions options, string region)
         {
             if (key == null)
-                throw new ArgumentNullException(nameof(key));
+                throw new ArgumentNullException(nameof(key));            
 
             var cacheEntry = new CacheEntry<TKey, TValue>(key, region, value, options);
 
@@ -52,6 +54,8 @@ namespace FCP.Cache
         {
             if (entry == null)
                 throw new ArgumentNullException(nameof(entry));
+
+            CheckDisposed();
 
             SetInternal(entry);
         }
@@ -70,6 +74,8 @@ namespace FCP.Cache
             if (key == null)
                 throw new ArgumentNullException(nameof(key));
 
+            CheckDisposed();
+
             RemoveInternal(key, region);
         }
 
@@ -77,12 +83,21 @@ namespace FCP.Cache
         #endregion
 
         #region Clear
-        public abstract void Clear();
+        public virtual void Clear()
+        {
+            CheckDisposed();
+
+            ClearInternal();
+        }
+
+        protected abstract void ClearInternal();
 
         public virtual void ClearRegion(string region)
         {
             if (string.IsNullOrEmpty(region))
                 throw new ArgumentNullException(nameof(region));
+
+            CheckDisposed();
 
             ClearRegionInternal(region);
         }
@@ -92,6 +107,14 @@ namespace FCP.Cache
 
         #region IDisposable Support
         private bool disposedValue = false; // 要检测冗余调用
+
+        protected void CheckDisposed()
+        {
+            if (disposedValue)
+            {
+                throw new ObjectDisposedException(GetType().FullName);
+            }
+        }
 
         protected virtual void Dispose(bool disposing)
         {
