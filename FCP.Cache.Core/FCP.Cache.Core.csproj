@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="BaseCacheProvider.cs" />
     <Compile Include="BaseDistributedCacheProvider.cs" />
+    <Compile Include="Builder\CacheEntryOptionsFactory.cs" />
     <Compile Include="Common\CacheEntry.cs" />
     <Compile Include="Common\CacheEntryOptions.cs" />
     <Compile Include="Extensions\CacheProviderExtensions.cs" />
@@ -51,6 +52,7 @@
     <Compile Include="Interfaces\IDistributedCacheProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

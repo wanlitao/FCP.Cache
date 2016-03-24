@@ -115,6 +115,17 @@ namespace FCP.Cache.Memory
             var fullKey = GetEntryKey(key, region);
             var entry = _cache.Get(fullKey) as CacheEntry<string, TValue>;
 
+            if (entry != null && entry.Options.ExpirationMode == ExpirationMode.Sliding)
+            {
+                // if sliding expire timeout is smaller than CacheExpires.MIN_UPDATE_DELTA (1s), will not update the entry expire time
+                // so to avoid this issue reset the entry
+                if (entry.Options.ExpirationTimeout <= TimeSpan.FromSeconds(1))
+                {
+                    var newCachePolicy = BuildCachePolicy(entry);
+                    _cache.Set(fullKey, entry, newCachePolicy);
+                }                                
+            }
+
             return entry;
         }
         #endregion

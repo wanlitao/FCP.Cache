@@ -11,12 +11,12 @@ namespace FCP.Cache
         /// Gets the expiration mode.
         /// </summary>
         /// <value>The expiration mode.</value>
-        public ExpirationMode ExpirationMode { get; }
+        public ExpirationMode ExpirationMode { get; set; }
 
         /// <summary>
         /// Gets the expiration timeout.
         /// </summary>
         /// <value>The expiration timeout.</value>
-        public TimeSpan ExpirationTimeout { get; }
+        public TimeSpan ExpirationTimeout { get; set; }
     }
 }
