@@ -5,6 +5,16 @@ namespace FCP.Cache.Redis
 {
     public class RedisCacheProvider : BaseDistributedCacheProvider
     {
+        private readonly RedisConnection _connection;        
+
+        public RedisCacheProvider(string configuration)
+        {
+            if (string.IsNullOrEmpty(configuration))
+                throw new ArgumentNullException(nameof(configuration));
+
+            _connection = new RedisConnection(configuration);
+        }
+
         #region Get
         protected override CacheEntry<string, TValue> GetCacheEntryInternal<TValue>(string key, string region)
         {

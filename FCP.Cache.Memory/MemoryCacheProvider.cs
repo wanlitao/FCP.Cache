@@ -31,7 +31,7 @@ namespace FCP.Cache.Memory
 
             _cacheName = name;
             _cache = new MemoryCache(name);
-            Init();                       
+            Init();
         }
 
         private void Init()
