@@ -36,11 +36,10 @@ namespace FCP.Cache.Redis
             if (config.EndPoints.Count == 0)
                 throw new ArgumentException("No endpoints specified", "configuration");
 
-            config.SetDefaultPorts();
+            config.SetDefaultPorts();            
 
             return config.ToString();
         }
-
 
         #region Connect
         public ConnectionMultiplexer Connect()

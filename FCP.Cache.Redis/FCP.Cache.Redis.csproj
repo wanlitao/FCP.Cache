@@ -45,8 +45,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RedisCacheConstants.cs" />
+    <Compile Include="RedisCacheExtensions.cs" />
     <Compile Include="RedisCacheProvider.cs" />
     <Compile Include="RedisConnection.cs" />
+    <Compile Include="RedisValueConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FCP.Cache.Core\FCP.Cache.Core.csproj">
