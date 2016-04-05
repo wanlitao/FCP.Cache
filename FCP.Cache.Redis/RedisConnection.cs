@@ -9,19 +9,21 @@ namespace FCP.Cache.Redis
     /// <summary>
     /// Redis连接
     /// </summary>
-    public class RedisConnection
+    public class RedisConnection : IDisposable
     {
         private static IDictionary<string, ConnectionMultiplexer> connectionDic = new Dictionary<string, ConnectionMultiplexer>();
         private static object connectLock = new object();
 
         private readonly string _connectionString;
+        private readonly ConfigurationOptions _configOptions;
 
         public RedisConnection(string configuration)
         {
             if (string.IsNullOrEmpty(configuration))
                 throw new ArgumentNullException(nameof(configuration));
 
-            _connectionString = GetConnectionString(configuration);
+            _configOptions = GetConfigurationOptions(configuration);
+            _connectionString = _configOptions.ToString();
         }
 
         /// <summary>
@@ -29,16 +31,16 @@ namespace FCP.Cache.Redis
         /// </summary>
         /// <param name="configuration"></param>
         /// <returns></returns>
-        private static string GetConnectionString(string configuration)
+        private static ConfigurationOptions GetConfigurationOptions(string configuration)
         {
-            var config = ConfigurationOptions.Parse(configuration);
+            var configOptions = ConfigurationOptions.Parse(configuration);
 
-            if (config.EndPoints.Count == 0)
+            if (configOptions.EndPoints.Count == 0)
                 throw new ArgumentException("No endpoints specified", "configuration");
 
-            config.SetDefaultPorts();            
+            configOptions.SetDefaultPorts();            
 
-            return config.ToString();
+            return configOptions;
         }
 
         #region Connect
@@ -111,6 +113,57 @@ namespace FCP.Cache.Redis
             {
                 throw new InvalidOperationException("No writeable endpoint found.");
             }
+        }
+        #endregion
+
+        #region Configuration
+        internal ConfigurationOptions Configuration
+        {
+            get { return _configOptions; }
+        }
+        #endregion
+
+        #region IDisposable Support
+        private bool disposedValue = false; // 要检测冗余调用
+
+        protected void CheckDisposed()
+        {
+            if (disposedValue)
+            {
+                throw new ObjectDisposedException(GetType().FullName);
+            }
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    lock(connectLock)
+                    {
+                        ConnectionMultiplexer connection;
+                        if (connectionDic.TryGetValue(_connectionString, out connection))
+                        {
+                            connectionDic.Remove(_connectionString);
+
+                            connection.Dispose();
+                        }
+                    }                   
+                }
+                disposedValue = true;
+            }
+        }
+
+        ~RedisConnection()
+        {
+            Dispose(false);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
         #endregion
     }
