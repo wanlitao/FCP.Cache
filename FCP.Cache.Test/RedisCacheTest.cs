@@ -164,16 +164,16 @@ namespace FCP.Cache.Test
             var redisCache = new RedisCacheProvider(redisConfiguration);
 
             var key = Guid.NewGuid().ToString("N");
-            var options = CacheEntryOptionsFactory.Sliding().Timeout(TimeSpan.FromMilliseconds(500));
+            var options = CacheEntryOptionsFactory.Sliding().Timeout(TimeSpan.FromMilliseconds(1000));
             await redisCache.SetAsync(key, "something", options).ConfigureAwait(false);
 
-            Thread.Sleep(400);
+            Thread.Sleep(800);
             Assert.Equal("something", await redisCache.GetAsync<string>(key).ConfigureAwait(false));
 
-            Thread.Sleep(400);
+            Thread.Sleep(800);
             Assert.Equal("something", await redisCache.GetAsync<string>(key).ConfigureAwait(false));
 
-            Thread.Sleep(550);
+            Thread.Sleep(1200);
             Assert.Null(await redisCache.GetAsync<string>(key).ConfigureAwait(false));
 
             options = CacheEntryOptionsFactory.Sliding().Timeout(TimeSpan.FromSeconds(2));
