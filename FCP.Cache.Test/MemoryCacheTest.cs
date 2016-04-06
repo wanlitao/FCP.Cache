@@ -31,7 +31,7 @@ namespace FCP.Cache.Test
             var memoryCache = MemoryCacheProvider.Default;
 
             var key = Guid.NewGuid().ToString("N");
-            var options = CacheEntryOptionsFactory.Sliding().Timeout(TimeSpan.FromMilliseconds(100));            
+            var options = CacheEntryOptionsFactory.Sliding().Timeout(TimeSpan.FromMilliseconds(100));
             memoryCache.Set(key, "something", options);            
 
             Thread.Sleep(80);
@@ -43,7 +43,7 @@ namespace FCP.Cache.Test
             Thread.Sleep(100);
             Assert.Null(memoryCache.Get<string>(key));
 
-            options = CacheEntryOptionsFactory.Sliding().Timeout(TimeSpan.FromSeconds(2));            
+            options = CacheEntryOptionsFactory.Sliding().Timeout(TimeSpan.FromSeconds(2));
             memoryCache.Set(key, "something", options);
 
             Thread.Sleep(1800);
@@ -90,7 +90,7 @@ namespace FCP.Cache.Test
             foreach(var key in keys)
             {
                 Assert.Null(memoryCache.Get<string>(key));
-            }                        
+            }
         }
 
         [Fact]
