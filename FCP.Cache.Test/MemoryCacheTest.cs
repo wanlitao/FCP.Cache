@@ -40,7 +40,7 @@ namespace FCP.Cache.Test
             Thread.Sleep(250);
             Assert.Equal("something", memoryCache.Get<string>(key));
 
-            Thread.Sleep(100);
+            Thread.Sleep(300);
             Assert.Null(memoryCache.Get<string>(key));
 
             options = CacheEntryOptionsFactory.Sliding().Timeout(TimeSpan.FromSeconds(2));
