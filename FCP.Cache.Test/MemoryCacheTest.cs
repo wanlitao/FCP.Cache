@@ -31,13 +31,13 @@ namespace FCP.Cache.Test
             var memoryCache = MemoryCacheProvider.Default;
 
             var key = Guid.NewGuid().ToString("N");
-            var options = CacheEntryOptionsFactory.Sliding().Timeout(TimeSpan.FromMilliseconds(100));
+            var options = CacheEntryOptionsFactory.Sliding().Timeout(TimeSpan.FromMilliseconds(300));
             memoryCache.Set(key, "something", options);            
 
-            Thread.Sleep(80);
+            Thread.Sleep(250);
             Assert.Equal("something", memoryCache.Get<string>(key));
 
-            Thread.Sleep(80);
+            Thread.Sleep(250);
             Assert.Equal("something", memoryCache.Get<string>(key));
 
             Thread.Sleep(100);
