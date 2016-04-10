@@ -17,6 +17,7 @@ namespace FCP.Cache.Redis
         private readonly string _connectionString;
         private readonly ConfigurationOptions _configOptions;
 
+        #region Constructor
         public RedisConnection(string configuration)
         {
             if (string.IsNullOrEmpty(configuration))
@@ -26,8 +27,16 @@ namespace FCP.Cache.Redis
             _connectionString = _configOptions.ToString();
         }
 
+        public RedisConnection(ConfigurationOptions configOptions)
+        {
+            CheckConfigurationOptions(configOptions);
+
+            _configOptions = configOptions;
+            _connectionString = _configOptions.ToString();
+        }
+
         /// <summary>
-        /// 获取连接字符串
+        /// 获取连接配置
         /// </summary>
         /// <param name="configuration"></param>
         /// <returns></returns>
@@ -35,13 +44,26 @@ namespace FCP.Cache.Redis
         {
             var configOptions = ConfigurationOptions.Parse(configuration);
 
+            CheckConfigurationOptions(configOptions);
+            
+            return configOptions;
+        }
+
+        /// <summary>
+        /// 校验连接配置
+        /// </summary>
+        /// <param name="configOptions"></param>
+        private static void CheckConfigurationOptions(ConfigurationOptions configOptions)
+        {
+            if (configOptions == null)
+                throw new ArgumentNullException(nameof(configOptions));
+
             if (configOptions.EndPoints.Count == 0)
                 throw new ArgumentException("No endpoints specified", "configuration");
 
-            configOptions.SetDefaultPorts();            
-
-            return configOptions;
+            configOptions.SetDefaultPorts();
         }
+        #endregion
 
         #region Connect
         public ConnectionMultiplexer Connect()
