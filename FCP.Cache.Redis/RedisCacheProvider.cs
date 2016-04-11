@@ -11,21 +11,42 @@ namespace FCP.Cache.Redis
         private readonly RedisConnection _connection;
         private readonly RedisValueConverter _valueConverter;
 
+        #region Constructor
         public RedisCacheProvider(string configuration)
-            : this(configuration, new JsonCacheSerializer())
+            : this(ParseConfigurationOptions(configuration))
         { }
 
-        public RedisCacheProvider(string configuration, ICacheSerializer serializer)
+        public RedisCacheProvider(ConfigurationOptions configOptions)
+            : this(configOptions, new JsonCacheSerializer())
+        { }
+
+        public RedisCacheProvider(ConfigurationOptions configOptions, ICacheSerializer serializer)
         {
-            if (string.IsNullOrEmpty(configuration))
-                throw new ArgumentNullException(nameof(configuration));
+            if (configOptions == null)
+                throw new ArgumentNullException(nameof(configOptions));
 
             if (serializer == null)
                 throw new ArgumentNullException(nameof(serializer));
 
-            _connection = new RedisConnection(configuration);
+            _connection = new RedisConnection(configOptions);
             _valueConverter = new RedisValueConverter(serializer);
         }
+        #endregion
+
+        #region ConfigurationOptions
+        /// <summary>
+        /// 获取连接配置
+        /// </summary>
+        /// <param name="configuration"></param>
+        /// <returns></returns>
+        protected static ConfigurationOptions ParseConfigurationOptions(string configuration)
+        {
+            if (string.IsNullOrEmpty(configuration))
+                throw new ArgumentNullException(nameof(configuration));
+
+            return ConfigurationOptions.Parse(configuration);
+        }
+        #endregion
 
         #region Key
         protected string GetEntryKey(string key, string region)

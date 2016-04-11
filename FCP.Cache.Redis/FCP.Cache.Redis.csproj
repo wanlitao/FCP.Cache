@@ -51,6 +51,7 @@
     <Compile Include="RedisConnection.cs" />
     <Compile Include="RedisValueConverter.cs" />
     <Compile Include="Sentinel\IRedisSentinelManager.cs" />
+    <Compile Include="Sentinel\RedisSentinelException.cs" />
     <Compile Include="Sentinel\RedisSentinelManager.cs" />
   </ItemGroup>
   <ItemGroup>

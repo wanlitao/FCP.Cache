@@ -17,15 +17,7 @@ namespace FCP.Cache.Redis
         private readonly string _connectionString;
         private readonly ConfigurationOptions _configOptions;
 
-        #region Constructor
-        public RedisConnection(string configuration)
-        {
-            if (string.IsNullOrEmpty(configuration))
-                throw new ArgumentNullException(nameof(configuration));
-
-            _configOptions = GetConfigurationOptions(configuration);
-            _connectionString = _configOptions.ToString();
-        }
+        #region Constructor       
 
         public RedisConnection(ConfigurationOptions configOptions)
         {
@@ -33,20 +25,6 @@ namespace FCP.Cache.Redis
 
             _configOptions = configOptions;
             _connectionString = _configOptions.ToString();
-        }
-
-        /// <summary>
-        /// 获取连接配置
-        /// </summary>
-        /// <param name="configuration"></param>
-        /// <returns></returns>
-        private static ConfigurationOptions GetConfigurationOptions(string configuration)
-        {
-            var configOptions = ConfigurationOptions.Parse(configuration);
-
-            CheckConfigurationOptions(configOptions);
-            
-            return configOptions;
         }
 
         /// <summary>

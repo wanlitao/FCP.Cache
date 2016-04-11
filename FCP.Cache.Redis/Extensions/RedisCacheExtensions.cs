@@ -15,7 +15,7 @@ namespace FCP.Cache.Redis
         };
 
         #region Entry Get
-        private static CacheEntry<string, TValue> convertCacheEntry<TValue>(RedisValue[] redisValues, IRedisValueConverter valueConverter)
+        private static CacheEntry<string, TValue> ConvertCacheEntry<TValue>(RedisValue[] redisValues, IRedisValueConverter valueConverter)
         {
             if (redisValues == null || redisValues.Length < 4)
                 return null;
@@ -45,7 +45,7 @@ namespace FCP.Cache.Redis
 
             var results = cache.HashGet(key, EntryHashFields);
 
-            return convertCacheEntry<TValue>(results, valueConverter);
+            return ConvertCacheEntry<TValue>(results, valueConverter);
         }
 
         internal static async Task<CacheEntry<string, TValue>> HashEntryGetAsync<TValue>(this IDatabase cache, string key, IRedisValueConverter valueConverter)
@@ -55,12 +55,12 @@ namespace FCP.Cache.Redis
 
             var results = await cache.HashGetAsync(key, EntryHashFields).ConfigureAwait(false);
 
-            return convertCacheEntry<TValue>(results, valueConverter);
+            return ConvertCacheEntry<TValue>(results, valueConverter);
         }
         #endregion
 
         #region Entry Set
-        private static HashEntry[] convertHashEntry<TValue>(CacheEntry<string, TValue> entry, IRedisValueConverter valueConverter)
+        private static HashEntry[] ConvertHashEntry<TValue>(CacheEntry<string, TValue> entry, IRedisValueConverter valueConverter)
         {
             if (entry == null)
                 throw new ArgumentNullException(nameof(entry));
@@ -84,7 +84,7 @@ namespace FCP.Cache.Redis
             if (string.IsNullOrEmpty(key))
                 throw new ArgumentNullException(nameof(key));            
 
-            var hashEntries = convertHashEntry(entry, valueConverter);
+            var hashEntries = ConvertHashEntry(entry, valueConverter);
 
             cache.HashSet(key, hashEntries, CommandFlags.FireAndForget);
         }
@@ -94,9 +94,26 @@ namespace FCP.Cache.Redis
             if (string.IsNullOrEmpty(key))
                 throw new ArgumentNullException(nameof(key));
 
-            var hashEntries = convertHashEntry(entry, valueConverter);
+            var hashEntries = ConvertHashEntry(entry, valueConverter);
 
             await cache.HashSetAsync(key, hashEntries, CommandFlags.FireAndForget).ConfigureAwait(false);
+        }
+        #endregion
+
+        #region ConfiguationOptions
+        internal static ConfigurationOptions ConvertConfigurationOptions(this EndPointCollection endPoints)
+        {
+            if (endPoints == null || endPoints.Count == 0)
+                return null;
+
+            var configOptions = new ConfigurationOptions();
+
+            foreach (var endPoint in endPoints)
+            {
+                configOptions.EndPoints.Add(endPoint);
+            }
+
+            return configOptions;
         }
         #endregion
     }
