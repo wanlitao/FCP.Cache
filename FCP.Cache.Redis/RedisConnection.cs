@@ -53,7 +53,7 @@ namespace FCP.Cache.Redis
                 {
                     if (!connectionDic.TryGetValue(_connectionString, out connection))
                     {
-                        connection = ConnectionMultiplexer.Connect(_connectionString);
+                        connection = ConnectionMultiplexer.Connect(_configOptions);
 
                         CheckConnection(connection);
 
@@ -70,7 +70,7 @@ namespace FCP.Cache.Redis
             ConnectionMultiplexer connection;
             if (!connectionDic.TryGetValue(_connectionString, out connection))
             {
-                connection = await ConnectionMultiplexer.ConnectAsync(_connectionString).ConfigureAwait(false);
+                connection = await ConnectionMultiplexer.ConnectAsync(_configOptions).ConfigureAwait(false);
 
                 CheckConnection(connection);
 

@@ -3,7 +3,7 @@ using StackExchange.Redis;
 
 namespace FCP.Cache.Redis
 {
-    public interface IRedisSentinelManager
+    public interface IRedisSentinelManager : IDisposable
     {
         RedisCacheProvider GetRedisCacheProvider();
 

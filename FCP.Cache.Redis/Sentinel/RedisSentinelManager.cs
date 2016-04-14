@@ -23,11 +23,14 @@ namespace FCP.Cache.Redis
         private readonly RedisConnection _sentinelConnection;
 
         private int _sentinelIndex = -1;
-        private IServer _currentSentinelServer;
-        private RedisCacheProvider _redisCacheProvider;
+        private IServer _currentSentinelServer;        
 
         public RedisSentinelManager()
-            : this(defaultMasterName, new string[] { defaultSentinelHost })
+            : this(defaultMasterName)
+        { }
+
+        public RedisSentinelManager(string masterName)
+            : this(masterName, new string[] { defaultSentinelHost })
         { }
 
         public RedisSentinelManager(string masterName, params string[] sentinelHosts)
@@ -219,6 +222,33 @@ namespace FCP.Cache.Redis
                 return new RedisCacheProvider(configOptions, cacheSerializer);
 
             return new RedisCacheProvider(configOptions);
+        }
+        #endregion
+
+        #region IDisposable Support
+        private bool disposedValue = false; // 要检测冗余调用
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    _currentSentinelServer = null;
+                    _sentinelConnection.Dispose();
+                }
+                disposedValue = true;
+            }
+        }
+        
+        ~RedisSentinelManager() {           
+            Dispose(false);
+        }
+        
+        public void Dispose()
+        {            
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
         #endregion
     }

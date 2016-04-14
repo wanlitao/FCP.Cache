@@ -44,9 +44,20 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RedisSentinelTestHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FCP.Cache.Core\FCP.Cache.Core.csproj">
+      <Project>{62c320b5-7987-4ad3-8eb7-51c184811724}</Project>
+      <Name>FCP.Cache.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FCP.Cache.Redis\FCP.Cache.Redis.csproj">
+      <Project>{26424a41-2627-46da-b308-5689b6aaded3}</Project>
+      <Name>FCP.Cache.Redis</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
