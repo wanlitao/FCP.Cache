@@ -5,7 +5,7 @@ namespace FCP.Cache.Redis.ConsoleTest
 {
     class Program
     {
-        protected static IRedisSentinelManager sentinelManager = RedisSentinelTestHelper.GetSentinelManager();
+        protected static IRedisSentinelManager sentinelManager = RedisSentinelTestHelper.GetSentinelManager(Console.Out);
 
         static void Main(string[] args)
         {

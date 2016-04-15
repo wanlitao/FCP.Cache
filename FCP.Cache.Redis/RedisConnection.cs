@@ -3,6 +3,7 @@ using StackExchange.Redis;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace FCP.Cache.Redis
 {
@@ -44,7 +45,7 @@ namespace FCP.Cache.Redis
         #endregion
 
         #region Connect
-        public ConnectionMultiplexer Connect()
+        public ConnectionMultiplexer Connect(TextWriter connectLogger = null)
         {
             ConnectionMultiplexer connection;
             if (!connectionDic.TryGetValue(_connectionString, out connection))
@@ -53,7 +54,7 @@ namespace FCP.Cache.Redis
                 {
                     if (!connectionDic.TryGetValue(_connectionString, out connection))
                     {
-                        connection = ConnectionMultiplexer.Connect(_configOptions);
+                        connection = ConnectionMultiplexer.Connect(_configOptions, connectLogger);
 
                         CheckConnection(connection);
 
@@ -65,12 +66,12 @@ namespace FCP.Cache.Redis
             return connection;
         }
 
-        public async Task<ConnectionMultiplexer> ConnectAsync()
+        public async Task<ConnectionMultiplexer> ConnectAsync(TextWriter connectLogger = null)
         {
             ConnectionMultiplexer connection;
             if (!connectionDic.TryGetValue(_connectionString, out connection))
             {
-                connection = await ConnectionMultiplexer.ConnectAsync(_configOptions).ConfigureAwait(false);
+                connection = await ConnectionMultiplexer.ConnectAsync(_configOptions, connectLogger).ConfigureAwait(false);
 
                 CheckConnection(connection);
 

@@ -1,4 +1,6 @@
-﻿namespace FCP.Cache.Redis.ConsoleTest
+﻿using System.IO;
+
+namespace FCP.Cache.Redis.ConsoleTest
 {
     internal class RedisSentinelTestHelper
     {
@@ -11,9 +13,9 @@
             "127.0.0.1:32002"
         };
 
-        internal static IRedisSentinelManager GetSentinelManager()
+        internal static IRedisSentinelManager GetSentinelManager(TextWriter logger = null)
         {
-            return new RedisSentinelManager(MasterName, SentinelHosts);
+            return new RedisSentinelManager(MasterName, SentinelHosts) { SentinelLogger = logger };
         }
     }
 }

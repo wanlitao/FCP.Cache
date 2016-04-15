@@ -43,7 +43,7 @@ namespace FCP.Cache.Redis
             if (string.IsNullOrEmpty(key))
                 throw new ArgumentNullException(nameof(key));            
 
-            var results = cache.HashGet(key, EntryHashFields);
+            var results = cache.HashGet(key, EntryHashFields, CommandFlags.PreferSlave);
 
             return ConvertCacheEntry<TValue>(results, valueConverter);
         }
@@ -53,7 +53,7 @@ namespace FCP.Cache.Redis
             if (string.IsNullOrEmpty(key))
                 throw new ArgumentNullException(nameof(key));
 
-            var results = await cache.HashGetAsync(key, EntryHashFields).ConfigureAwait(false);
+            var results = await cache.HashGetAsync(key, EntryHashFields, CommandFlags.PreferSlave).ConfigureAwait(false);
 
             return ConvertCacheEntry<TValue>(results, valueConverter);
         }

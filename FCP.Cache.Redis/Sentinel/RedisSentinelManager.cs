@@ -3,6 +3,7 @@ using StackExchange.Redis;
 using System.Linq;
 using System.Collections.Generic;
 using System.Net;
+using System.IO;
 
 namespace FCP.Cache.Redis
 {
@@ -23,7 +24,13 @@ namespace FCP.Cache.Redis
         private readonly RedisConnection _sentinelConnection;
 
         private int _sentinelIndex = -1;
-        private IServer _currentSentinelServer;        
+        private IServer _currentSentinelServer;
+
+        #region properties
+        public TextWriter SentinelLogger { get; set; }
+
+        public Action<string, string> OnSentinelMessageReceived { get; set; }
+        #endregion
 
         public RedisSentinelManager()
             : this(defaultMasterName)
@@ -44,7 +51,9 @@ namespace FCP.Cache.Redis
             _masterName = masterName;
             _sentinelEndpoints = ParseSentinelEndPoints(sentinelHosts);
 
-            _sentinelConnection = BuildSentinelConnection(_masterName, _sentinelEndpoints);            
+            _sentinelConnection = BuildSentinelConnection(_masterName, _sentinelEndpoints);
+
+            BeginListeningForConfigurationChanges();            
         }
 
         #region Sentinel Connection
@@ -98,7 +107,7 @@ namespace FCP.Cache.Redis
 
             var nextSentinelEndPoint = _sentinelEndpoints[_sentinelIndex];
 
-            return _sentinelConnection.Connect().GetServer(nextSentinelEndPoint);
+            return _sentinelConnection.Connect(SentinelLogger).GetServer(nextSentinelEndPoint);
         }
 
         protected IServer GetValidSentinelServer()
@@ -148,7 +157,35 @@ namespace FCP.Cache.Redis
 
             return new RedisSentinelException(errorMessage, innerException);
         }
-        #endregion       
+        #endregion
+
+        #region Sentinel Subscriber
+        protected void BeginListeningForConfigurationChanges()
+        {
+            var sub = _sentinelConnection.Connect(SentinelLogger).GetSubscriber();
+            sub.Subscribe("*", SentinelMessageReceived);
+        }
+
+        protected void SentinelMessageReceived(RedisChannel channel, RedisValue message)
+        {
+            if (SentinelLogger != null)
+                SentinelLogger.WriteLine(string.Format("Received '{0}' on channel '{1}' from Sentinel", message, channel));
+
+            var channelName = ((string)channel).ToLower();
+
+            if (channelName == "+failover-end" || channelName == "+switch-master")
+            {
+
+            }
+            else if(channelName == "+sentinel")
+            {
+
+            }
+
+            if (OnSentinelMessageReceived != null)
+                OnSentinelMessageReceived(channel, message);
+        }
+        #endregion
 
         #region MasterSlave Connection
         protected static EndPointCollection ParseSlaveEndPoints(params KeyValuePair<string, string>[][] slaveInfos)
