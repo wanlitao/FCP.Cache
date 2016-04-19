@@ -169,18 +169,7 @@ namespace FCP.Cache.Redis
         protected void SentinelMessageReceived(RedisChannel channel, RedisValue message)
         {
             if (SentinelLogger != null)
-                SentinelLogger.WriteLine(string.Format("Received '{0}' on channel '{1}' from Sentinel", message, channel));
-
-            var channelName = ((string)channel).ToLower();
-
-            if (channelName == "+failover-end" || channelName == "+switch-master")
-            {
-
-            }
-            else if(channelName == "+sentinel")
-            {
-
-            }
+                SentinelLogger.WriteLine(string.Format("Received '{0}' on channel '{1}' from Sentinel", message, channel));            
 
             if (OnSentinelMessageReceived != null)
                 OnSentinelMessageReceived(channel, message);
