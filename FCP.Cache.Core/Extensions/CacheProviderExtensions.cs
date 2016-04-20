@@ -14,5 +14,12 @@
         {
             cacheProvider.Set<TValue>(key, value, new CacheEntryOptions(), region);
         }
+
+        #region convert distributed cache
+        public static IDistributedCacheProvider AsDistributedCache(this ICacheProvider<string> cacheProvider)
+        {
+            return new CacheProviderDistributedWrapper(cacheProvider);
+        }
+        #endregion
     }
 }

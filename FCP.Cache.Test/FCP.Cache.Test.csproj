@@ -63,6 +63,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CacheDistributedWrapperTest.cs" />
+    <Compile Include="Common\DistributedCacheTest.cs" />
     <Compile Include="MemoryCacheTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RedisCacheTest.cs" />

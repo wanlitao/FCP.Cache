@@ -47,6 +47,7 @@
     <Compile Include="BaseCacheProvider.cs" />
     <Compile Include="BaseDistributedCacheProvider.cs" />
     <Compile Include="Builder\CacheEntryOptionsFactory.cs" />
+    <Compile Include="CacheProviderDistributedWrapper.cs" />
     <Compile Include="Common\CacheEntry.cs" />
     <Compile Include="Common\CacheEntryOptions.cs" />
     <Compile Include="Extensions\CacheProviderExtensions.cs" />
