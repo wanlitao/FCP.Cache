@@ -6,9 +6,9 @@ namespace FCP.Cache
     public abstract class BaseDistributedCacheProvider : BaseCacheProvider<string>, IDistributedCacheProvider
     {
         #region Get
-        public async Task<TValue> GetAsync<TValue>(string key)
+        public Task<TValue> GetAsync<TValue>(string key)
         {
-            return await GetAsync<TValue>(key, null).ConfigureAwait(false);
+            return GetAsync<TValue>(key, null);
         }
 
         public virtual async Task<TValue> GetAsync<TValue>(string key, string region)
@@ -22,86 +22,86 @@ namespace FCP.Cache
             return default(TValue);            
         }
 
-        protected virtual async Task<CacheEntry<string, TValue>> GetCacheEntryAsync<TValue>(string key, string region)
+        protected virtual Task<CacheEntry<string, TValue>> GetCacheEntryAsync<TValue>(string key, string region)
         {
             if (string.IsNullOrEmpty(key))
                 throw new ArgumentNullException(nameof(key));
 
             CheckDisposed();
 
-            return await GetCacheEntryInternalAsync<TValue>(key, region).ConfigureAwait(false);
+            return GetCacheEntryInternalAsync<TValue>(key, region);
         }
 
         protected abstract Task<CacheEntry<string, TValue>> GetCacheEntryInternalAsync<TValue>(string key, string region);
         #endregion
 
         #region Set
-        public async Task SetAsync<TValue>(string key, TValue value, CacheEntryOptions options)
+        public Task SetAsync<TValue>(string key, TValue value, CacheEntryOptions options)
         {
-            await SetAsync<TValue>(key, value, options, null).ConfigureAwait(false);
+            return SetAsync<TValue>(key, value, options, null);
         }
 
-        public virtual async Task SetAsync<TValue>(string key, TValue value, CacheEntryOptions options, string region)
+        public virtual Task SetAsync<TValue>(string key, TValue value, CacheEntryOptions options, string region)
         {
             if (string.IsNullOrEmpty(key))
                 throw new ArgumentNullException(nameof(key));
 
             var cacheEntry = new CacheEntry<string, TValue>(key, region, value, options);
 
-            await SetAsync(cacheEntry).ConfigureAwait(false);
+            return SetAsync(cacheEntry);
         }
 
-        protected virtual async Task SetAsync<TValue>(CacheEntry<string, TValue> entry)
+        protected virtual Task SetAsync<TValue>(CacheEntry<string, TValue> entry)
         {
             if (entry == null)
                 throw new ArgumentNullException(nameof(entry));
 
             CheckDisposed();
 
-            await SetInternalAsync(entry).ConfigureAwait(false);
+            return SetInternalAsync(entry);
         }
 
         protected abstract Task SetInternalAsync<TValue>(CacheEntry<string, TValue> entry);
         #endregion
 
         #region Remove
-        public async Task RemoveAsync(string key)
+        public Task RemoveAsync(string key)
         {
-            await RemoveAsync(key, null).ConfigureAwait(false);
+            return RemoveAsync(key, null);
         }
 
-        public virtual async Task RemoveAsync(string key, string region)
+        public virtual Task RemoveAsync(string key, string region)
         {
             if (string.IsNullOrEmpty(key))
                 throw new ArgumentNullException(nameof(key));
 
             CheckDisposed();
 
-            await RemoveInternalAsync(key, region).ConfigureAwait(false);
+            return RemoveInternalAsync(key, region);
         }
 
         protected abstract Task RemoveInternalAsync(string key, string region);
         #endregion
 
         #region Clear
-        public virtual async Task ClearAsync()
+        public virtual Task ClearAsync()
         {
             CheckDisposed();
 
-            await ClearInternalAsync().ConfigureAwait(false);
+            return ClearInternalAsync();
         }
 
         protected abstract Task ClearInternalAsync();
 
 
-        public virtual async Task ClearRegionAsync(string region)
+        public virtual Task ClearRegionAsync(string region)
         {
             if (string.IsNullOrEmpty(region))
                 throw new ArgumentNullException(nameof(region));
 
             CheckDisposed();
 
-            await ClearRegionInternalAsync(region).ConfigureAwait(false);
+            return ClearRegionInternalAsync(region);
         }
 
         protected abstract Task ClearRegionInternalAsync(string region);              

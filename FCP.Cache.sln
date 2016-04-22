@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FCP.Cache.Core", "FCP.Cache.Core\FCP.Cache.Core.csproj", "{62C320B5-7987-4AD3-8EB7-51C184811724}"
 EndProject
@@ -12,6 +12,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FCP.Cache.Test", "FCP.Cache.Test\FCP.Cache.Test.csproj", "{D34A4A5D-C02B-4A65-9C2E-B2951C2F9033}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FCP.Cache.Redis.ConsoleTest", "FCP.Cache.Redis.ConsoleTest\FCP.Cache.Redis.ConsoleTest.csproj", "{A7EC9C19-892A-45F9-96A2-5C43F40A40BD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FCP.Cache.Manager", "FCP.Cache.Manager\FCP.Cache.Manager.csproj", "{5C503C17-54E2-401C-AE99-45C0E0D81F84}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{A7EC9C19-892A-45F9-96A2-5C43F40A40BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A7EC9C19-892A-45F9-96A2-5C43F40A40BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A7EC9C19-892A-45F9-96A2-5C43F40A40BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C503C17-54E2-401C-AE99-45C0E0D81F84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C503C17-54E2-401C-AE99-45C0E0D81F84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C503C17-54E2-401C-AE99-45C0E0D81F84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C503C17-54E2-401C-AE99-45C0E0D81F84}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
