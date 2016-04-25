@@ -13,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FCP.Cache.Test", "FCP.Cache
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FCP.Cache.Redis.ConsoleTest", "FCP.Cache.Redis.ConsoleTest\FCP.Cache.Redis.ConsoleTest.csproj", "{A7EC9C19-892A-45F9-96A2-5C43F40A40BD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FCP.Cache.Manager", "FCP.Cache.Manager\FCP.Cache.Manager.csproj", "{5C503C17-54E2-401C-AE99-45C0E0D81F84}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FCP.Cache.Service", "FCP.Cache.Service\FCP.Cache.Service.csproj", "{5C503C17-54E2-401C-AE99-45C0E0D81F84}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

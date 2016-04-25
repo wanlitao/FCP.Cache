@@ -1,6 +1,6 @@
-﻿namespace FCP.Cache.Manager
+﻿namespace FCP.Cache.Service
 {
-    public interface ICacheManager<TKey> : ICacheProvider<TKey>
+    public interface ICacheService<TKey> : ICacheProvider<TKey>
     {
         TValue GetOrAdd<TValue>(TKey key, TValue value, CacheEntryOptions options);
 

@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 
-namespace FCP.Cache.Manager
+namespace FCP.Cache.Service
 {
-    public interface IDistributedCacheManager : IDistributedCacheProvider, ICacheManager<string>
+    public interface IDistributedCacheService : IDistributedCacheProvider, ICacheService<string>
     {
         Task<TValue> GetOrAddAsync<TValue>(string key, TValue value, CacheEntryOptions options);
 

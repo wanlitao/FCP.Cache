@@ -7,8 +7,8 @@
     <ProjectGuid>{5C503C17-54E2-401C-AE99-45C0E0D81F84}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FCP.Cache.Manager</RootNamespace>
-    <AssemblyName>FCP.Cache.Manager</AssemblyName>
+    <RootNamespace>FCP.Cache.Service</RootNamespace>
+    <AssemblyName>FCP.Cache.Service</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -40,10 +40,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Extensions\CacheManagerExtensions.cs" />
-    <Compile Include="Extensions\DistributedCacheManagerExtensions.cs" />
-    <Compile Include="Interfaces\ICacheManager.cs" />
-    <Compile Include="Interfaces\IDistributedCacheManager.cs" />
+    <Compile Include="Extensions\CacheServiceExtensions.cs" />
+    <Compile Include="Extensions\DistributedCacheServiceExtensions.cs" />
+    <Compile Include="Interfaces\ICacheService.cs" />
+    <Compile Include="Interfaces\IDistributedCacheService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
