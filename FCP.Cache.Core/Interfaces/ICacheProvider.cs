@@ -19,6 +19,10 @@ namespace FCP.Cache
         /// <returns></returns>
         TValue Get<TValue>(TKey key, string region);
 
+        CacheEntry<TKey, TValue> GetCacheEntry<TValue>(TKey key);
+
+        CacheEntry<TKey, TValue> GetCacheEntry<TValue>(TKey key, string region);
+
         void Set<TValue>(TKey key, TValue value, CacheEntryOptions options);
 
         /// <summary>

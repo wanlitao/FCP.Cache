@@ -31,6 +31,16 @@ namespace FCP.Cache
             return _localCacheProvider.Get<TValue>(key, region);
         }
 
+        public CacheEntry<string, TValue> GetCacheEntry<TValue>(string key)
+        {
+            return _localCacheProvider.GetCacheEntry<TValue>(key);
+        }
+
+        public CacheEntry<string, TValue> GetCacheEntry<TValue>(string key, string region)
+        {
+            return _localCacheProvider.GetCacheEntry<TValue>(key, region);
+        }
+
         public Task<TValue> GetAsync<TValue>(string key)
         {
             return Task.FromResult(Get<TValue>(key));
@@ -39,6 +49,16 @@ namespace FCP.Cache
         public Task<TValue> GetAsync<TValue>(string key, string region)
         {
             return Task.FromResult(Get<TValue>(key, region));
+        }
+
+        public Task<CacheEntry<string, TValue>> GetCacheEntryAsync<TValue>(string key)
+        {
+            return Task.FromResult(GetCacheEntry<TValue>(key));
+        }
+
+        public Task<CacheEntry<string, TValue>> GetCacheEntryAsync<TValue>(string key, string region)
+        {
+            return Task.FromResult(GetCacheEntry<TValue>(key, region));
         }
         #endregion
 

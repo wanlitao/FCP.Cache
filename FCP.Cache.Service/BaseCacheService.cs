@@ -1,92 +1,119 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace FCP.Cache.Service
 {
-    public abstract class BaseCacheService<TKey> : ICacheService<TKey>
+    public abstract class BaseCacheService : BaseDistributedCacheProvider, ICacheService
     {
+        protected abstract IDistributedCacheProvider[] CacheProviders { get; }
+
         #region Get
-        public TValue Get<TValue>(TKey key)
+        protected override CacheEntry<string, TValue> GetCacheEntryInternal<TValue>(string key, string region)
         {
-            return Get<TValue>(key, null);
+            throw new NotImplementedException();
         }
 
-        public virtual TValue Get<TValue>(TKey key, string region)
+        protected override Task<CacheEntry<string, TValue>> GetCacheEntryInternalAsync<TValue>(string key, string region)
         {
             throw new NotImplementedException();
         }
         #endregion
 
         #region GetOrAdd
-        public TValue GetOrAdd<TValue>(TKey key, TValue value, CacheEntryOptions options)
+        public TValue GetOrAdd<TValue>(string key, TValue value, CacheEntryOptions options)
         {
             return GetOrAdd(key, value, options, null);
         }
 
-        public virtual TValue GetOrAdd<TValue>(TKey key, TValue value, CacheEntryOptions options, string region)
+        public virtual TValue GetOrAdd<TValue>(string key, TValue value, CacheEntryOptions options, string region)
         {
-            throw new NotImplementedException();
+            var cacheEntry = GetCacheEntry<TValue>(key, region);
+
+            if (cacheEntry != null && string.Compare(cacheEntry.Key, key, true) == 0)
+            {
+                return cacheEntry.Value;
+            }
+
+            Set(key, value, options, region);
+            return value;
+        }
+
+        public Task<TValue> GetOrAddAsync<TValue>(string key, TValue value, CacheEntryOptions options)
+        {
+            return GetOrAddAsync(key, value, options, null);
+        }
+
+        public virtual async Task<TValue> GetOrAddAsync<TValue>(string key, TValue value, CacheEntryOptions options, string region)
+        {
+            var cacheEntry = await GetCacheEntryAsync<TValue>(key, region).ConfigureAwait(false);
+
+            if (cacheEntry != null && string.Compare(cacheEntry.Key, key, true) == 0)
+            {
+                return cacheEntry.Value;
+            }
+
+            await SetAsync(key, value, options, region).ConfigureAwait(false);
+            return value;
         }
         #endregion
 
         #region Set
-        public void Set<TValue>(TKey key, TValue value, CacheEntryOptions options)
+        protected override void SetInternal<TValue>(CacheEntry<string, TValue> entry)
         {
-            Set(key, value, options, null);
+            throw new NotImplementedException();
         }
 
-        public virtual void Set<TValue>(TKey key, TValue value, CacheEntryOptions options, string region)
+        protected override Task SetInternalAsync<TValue>(CacheEntry<string, TValue> entry)
         {
             throw new NotImplementedException();
         }
         #endregion
 
         #region Remove
-        public void Remove(TKey key)
+        protected override void RemoveInternal(string key, string region)
         {
-            Remove(key, null);
+            throw new NotImplementedException();
         }
 
-        public virtual void Remove(TKey key, string region)
+        protected override Task RemoveInternalAsync(string key, string region)
         {
             throw new NotImplementedException();
         }
         #endregion
 
         #region Clear
-        public virtual void Clear()
+        protected override void ClearInternal()
         {
             throw new NotImplementedException();
         }
 
-        public virtual void ClearRegion(string region)
+        protected override Task ClearInternalAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void ClearRegionInternal(string region)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override Task ClearRegionInternalAsync(string region)
         {
             throw new NotImplementedException();
         }
         #endregion
 
         #region IDisposable Support
-        private bool disposedValue = false; // 要检测冗余调用
-
-        protected virtual void Dispose(bool disposing)
+        protected override void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (disposing)
             {
-                if (disposing)
+                foreach(var cacheProvider in CacheProviders)
                 {
-                    // TODO: 释放托管状态(托管对象)。
+                    cacheProvider.Dispose();
                 }
-                disposedValue = true;
             }
-        }
-        
-        ~BaseCacheService() {
-            Dispose(false);
-        }
-       
-        public void Dispose()
-        {           
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            base.Dispose(disposing);
         }
         #endregion
     }

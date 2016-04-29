@@ -41,11 +41,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseCacheService.cs" />
-    <Compile Include="BaseDistributedCacheService.cs" />
     <Compile Include="Extensions\CacheServiceExtensions.cs" />
-    <Compile Include="Extensions\DistributedCacheServiceExtensions.cs" />
     <Compile Include="Interfaces\ICacheService.cs" />
-    <Compile Include="Interfaces\IDistributedCacheService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

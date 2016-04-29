@@ -22,7 +22,12 @@ namespace FCP.Cache
             return default(TValue);            
         }
 
-        protected virtual Task<CacheEntry<string, TValue>> GetCacheEntryAsync<TValue>(string key, string region)
+        public Task<CacheEntry<string, TValue>> GetCacheEntryAsync<TValue>(string key)
+        {
+            return GetCacheEntryAsync<TValue>(key, null);
+        }
+
+        public virtual Task<CacheEntry<string, TValue>> GetCacheEntryAsync<TValue>(string key, string region)
         {
             if (string.IsNullOrEmpty(key))
                 throw new ArgumentNullException(nameof(key));

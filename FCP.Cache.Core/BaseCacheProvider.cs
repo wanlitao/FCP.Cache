@@ -21,7 +21,12 @@ namespace FCP.Cache
             return default(TValue);
         }
 
-        protected virtual CacheEntry<TKey, TValue> GetCacheEntry<TValue>(TKey key, string region)
+        public CacheEntry<TKey, TValue> GetCacheEntry<TValue>(TKey key)
+        {
+            return GetCacheEntry<TValue>(key, null);
+        }
+
+        public virtual CacheEntry<TKey, TValue> GetCacheEntry<TValue>(TKey key, string region)
         {
             if (key == null)
                 throw new ArgumentNullException(nameof(key));
