@@ -35,6 +35,8 @@ namespace FCP.Cache
         /// <returns></returns>
         Task SetAsync<TValue>(string key, TValue value, CacheEntryOptions options, string region);
 
+        Task SetAsync<TValue>(CacheEntry<string, TValue> entry);
+
         Task RemoveAsync(string key);
 
         /// <summary>

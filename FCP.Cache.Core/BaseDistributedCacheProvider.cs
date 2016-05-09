@@ -56,7 +56,7 @@ namespace FCP.Cache
             return SetAsync(cacheEntry);
         }
 
-        protected virtual Task SetAsync<TValue>(CacheEntry<string, TValue> entry)
+        public virtual Task SetAsync<TValue>(CacheEntry<string, TValue> entry)
         {
             if (entry == null)
                 throw new ArgumentNullException(nameof(entry));

@@ -60,46 +60,82 @@ namespace FCP.Cache.Service
         #region Set
         protected override void SetInternal<TValue>(CacheEntry<string, TValue> entry)
         {
-            throw new NotImplementedException();
+            foreach(var provider in CacheProviders)
+            {
+                provider.Set(entry);
+            }
         }
 
         protected override Task SetInternalAsync<TValue>(CacheEntry<string, TValue> entry)
         {
-            throw new NotImplementedException();
+            return Task.Run(() =>
+            {
+                foreach (var provider in CacheProviders)
+                {
+                    provider.SetAsync(entry).ConfigureAwait(false);
+                }
+            });
         }
         #endregion
 
         #region Remove
         protected override void RemoveInternal(string key, string region)
         {
-            throw new NotImplementedException();
+            foreach (var provider in CacheProviders)
+            {
+                provider.Remove(key, region);
+            }
         }
 
         protected override Task RemoveInternalAsync(string key, string region)
         {
-            throw new NotImplementedException();
+            return Task.Run(() =>
+            {
+                foreach (var provider in CacheProviders)
+                {
+                    provider.RemoveAsync(key, region).ConfigureAwait(false);
+                }
+            });
         }
         #endregion
 
         #region Clear
         protected override void ClearInternal()
         {
-            throw new NotImplementedException();
+            foreach (var provider in CacheProviders)
+            {
+                provider.Clear();
+            }
         }
 
         protected override Task ClearInternalAsync()
         {
-            throw new NotImplementedException();
+            return Task.Run(() =>
+            {
+                foreach (var provider in CacheProviders)
+                {
+                    provider.ClearAsync().ConfigureAwait(false);
+                }
+            });
         }
 
         protected override void ClearRegionInternal(string region)
         {
-            throw new NotImplementedException();
+            foreach (var provider in CacheProviders)
+            {
+                provider.ClearRegion(region);
+            }
         }
 
         protected override Task ClearRegionInternalAsync(string region)
         {
-            throw new NotImplementedException();
+            return Task.Run(() =>
+            {
+                foreach (var provider in CacheProviders)
+                {
+                    provider.ClearRegionAsync(region).ConfigureAwait(false);
+                }
+            });
         }
         #endregion
 

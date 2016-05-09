@@ -73,6 +73,11 @@ namespace FCP.Cache
             _localCacheProvider.Set<TValue>(key, value, options, region);
         }
 
+        public void Set<TValue>(CacheEntry<string, TValue> entry)
+        {
+            _localCacheProvider.Set<TValue>(entry);
+        }
+
         public Task SetAsync<TValue>(string key, TValue value, CacheEntryOptions options)
         {
             Set<TValue>(key, value, options);
@@ -83,6 +88,13 @@ namespace FCP.Cache
         public Task SetAsync<TValue>(string key, TValue value, CacheEntryOptions options, string region)
         {
             Set<TValue>(key, value, options, region);
+
+            return CompletedTask;
+        }
+
+        public Task SetAsync<TValue>(CacheEntry<string, TValue> entry)
+        {
+            Set<TValue>(entry);
 
             return CompletedTask;
         }

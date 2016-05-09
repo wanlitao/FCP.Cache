@@ -55,7 +55,7 @@ namespace FCP.Cache
             Set(cacheEntry);
         }
 
-        protected virtual void Set<TValue>(CacheEntry<TKey, TValue> entry)
+        public virtual void Set<TValue>(CacheEntry<TKey, TValue> entry)
         {
             if (entry == null)
                 throw new ArgumentNullException(nameof(entry));

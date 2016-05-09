@@ -35,6 +35,8 @@ namespace FCP.Cache
         /// <returns></returns>
         void Set<TValue>(TKey key, TValue value, CacheEntryOptions options, string region);
 
+        void Set<TValue>(CacheEntry<TKey, TValue> entry);
+
         void Remove(TKey key);
 
         /// <summary>
