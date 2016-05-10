@@ -136,6 +136,8 @@ namespace FCP.Cache.Memory
             var fullKey = GetEntryKey(entry.Key, entry.Region);
             var cachePolicy = BuildCachePolicy(entry);
 
+            entry.Options.CreatedUtc = DateTime.UtcNow;
+
             _cache.Set(fullKey, entry, cachePolicy);
         }
        

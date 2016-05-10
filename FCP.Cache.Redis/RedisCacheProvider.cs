@@ -133,6 +133,7 @@ namespace FCP.Cache.Redis
         {
             var fullKey = GetEntryKey(entry.Key, entry.Region);
 
+            entry.Options.CreatedUtc = DateTime.UtcNow;
             Database.HashEntrySet(fullKey, entry, _valueConverter);
 
             //update expire
@@ -152,8 +153,9 @@ namespace FCP.Cache.Redis
         protected override async Task SetInternalAsync<TValue>(CacheEntry<string, TValue> entry)
         {
             var fullKey = GetEntryKey(entry.Key, entry.Region);
-
             var database = await DatabaseAsync().ConfigureAwait(false);
+
+            entry.Options.CreatedUtc = DateTime.UtcNow;
             await database.HashEntrySetAsync(fullKey, entry, _valueConverter).ConfigureAwait(false);
 
             //update expire

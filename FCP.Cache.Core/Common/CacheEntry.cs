@@ -39,5 +39,14 @@ namespace FCP.Cache
         public CacheEntryOptions Options { get; private set; }
 
         public string Region { get; private set; }
+        
+        /// <summary>
+        /// Get Clone Entry
+        /// </summary>
+        /// <returns></returns>
+        public CacheEntry<TKey, TValue> Clone()
+        {
+            return new CacheEntry<TKey, TValue>(Key, Region, Value, Options.Clone());
+        }        
     }
 }

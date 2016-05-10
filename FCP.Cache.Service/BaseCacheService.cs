@@ -7,15 +7,98 @@ namespace FCP.Cache.Service
     {
         protected abstract IDistributedCacheProvider[] CacheProviders { get; }
 
+        #region Cache Synchronize
+        /// <summary>
+        /// Get the cache entry to sync set
+        /// </summary>
+        /// <typeparam name="TValue"></typeparam>
+        /// <param name="entry"></param>
+        /// <returns></returns>
+        protected CacheEntry<string, TValue> GetSyncSetCacheEntry<TValue>(CacheEntry<string, TValue> entry)
+        {
+            if (entry == null)
+                return null;
+
+            var setEntry = entry.Clone();
+
+            var options = setEntry.Options;
+            if (options.ExpirationMode == ExpirationMode.Absolute)
+            {
+                //calc new expiration timeout to make the entry timeout at the same time in all cache providers
+                var newExpirationTimeout = options.CreatedUtc.Add(options.ExpirationTimeout) - DateTime.UtcNow;
+                options.Timeout(newExpirationTimeout);
+            }
+
+            return setEntry;
+        }
+
+        protected void AddToCacheProviders<TValue>(CacheEntry<string, TValue> entry, int foundIndex)
+        {
+            if (entry == null || foundIndex < 1)
+                return;
+
+            var setEntry = GetSyncSetCacheEntry(entry);
+
+            for(var providerIndex = 0; providerIndex < CacheProviders.Length && providerIndex < foundIndex; providerIndex++)
+            {
+                CacheProviders[providerIndex].Set(setEntry);
+            }
+        }
+
+        protected Task AddToCacheProvidersAsync<TValue>(CacheEntry<string, TValue> entry, int foundIndex)
+        {
+            return Task.Run(async () =>
+            {
+                if (entry == null || foundIndex < 1)
+                    return;
+
+                var setEntry = GetSyncSetCacheEntry(entry);
+
+                for (var providerIndex = 0; providerIndex < CacheProviders.Length && providerIndex < foundIndex; providerIndex++)
+                {
+                    await CacheProviders[providerIndex].SetAsync(setEntry).ConfigureAwait(false);
+                }
+            });
+        }
+        #endregion
+
         #region Get
         protected override CacheEntry<string, TValue> GetCacheEntryInternal<TValue>(string key, string region)
         {
-            throw new NotImplementedException();
+            CacheEntry<string, TValue> entry = null;
+
+            for(var providerIndex = 0; providerIndex < CacheProviders.Length; providerIndex++)
+            {
+                var provider = CacheProviders[providerIndex];
+                entry = provider.GetCacheEntry<TValue>(key, region);
+
+                if (entry != null)
+                {
+                    AddToCacheProviders(entry, providerIndex);  //sync the cache entry to before cache providers
+                    break;
+                }
+            }
+
+            return entry;
         }
 
-        protected override Task<CacheEntry<string, TValue>> GetCacheEntryInternalAsync<TValue>(string key, string region)
+        protected override async Task<CacheEntry<string, TValue>> GetCacheEntryInternalAsync<TValue>(string key, string region)
         {
-            throw new NotImplementedException();
+            CacheEntry<string, TValue> entry = null;
+
+            for (var providerIndex = 0; providerIndex < CacheProviders.Length; providerIndex++)
+            {
+                var provider = CacheProviders[providerIndex];
+                entry = await provider.GetCacheEntryAsync<TValue>(key, region).ConfigureAwait(false);
+
+                if (entry != null)
+                {
+                    await AddToCacheProvidersAsync(entry, providerIndex);  //sync the cache entry to before cache providers
+                    break;
+                }
+            }
+
+            return entry;
         }
         #endregion
 
@@ -68,11 +151,11 @@ namespace FCP.Cache.Service
 
         protected override Task SetInternalAsync<TValue>(CacheEntry<string, TValue> entry)
         {
-            return Task.Run(() =>
+            return Task.Run(async () =>
             {
                 foreach (var provider in CacheProviders)
                 {
-                    provider.SetAsync(entry).ConfigureAwait(false);
+                    await provider.SetAsync(entry).ConfigureAwait(false);
                 }
             });
         }
@@ -89,11 +172,11 @@ namespace FCP.Cache.Service
 
         protected override Task RemoveInternalAsync(string key, string region)
         {
-            return Task.Run(() =>
+            return Task.Run(async () =>
             {
                 foreach (var provider in CacheProviders)
                 {
-                    provider.RemoveAsync(key, region).ConfigureAwait(false);
+                    await provider.RemoveAsync(key, region).ConfigureAwait(false);
                 }
             });
         }
@@ -110,11 +193,11 @@ namespace FCP.Cache.Service
 
         protected override Task ClearInternalAsync()
         {
-            return Task.Run(() =>
+            return Task.Run(async () =>
             {
                 foreach (var provider in CacheProviders)
                 {
-                    provider.ClearAsync().ConfigureAwait(false);
+                    await provider.ClearAsync().ConfigureAwait(false);
                 }
             });
         }
@@ -129,11 +212,11 @@ namespace FCP.Cache.Service
 
         protected override Task ClearRegionInternalAsync(string region)
         {
-            return Task.Run(() =>
+            return Task.Run(async () =>
             {
                 foreach (var provider in CacheProviders)
                 {
-                    provider.ClearRegionAsync(region).ConfigureAwait(false);
+                    await provider.ClearRegionAsync(region).ConfigureAwait(false);
                 }
             });
         }

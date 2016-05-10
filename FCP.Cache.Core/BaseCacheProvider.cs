@@ -61,7 +61,7 @@ namespace FCP.Cache
                 throw new ArgumentNullException(nameof(entry));
 
             CheckDisposed();
-
+            
             SetInternal(entry);
         }
 

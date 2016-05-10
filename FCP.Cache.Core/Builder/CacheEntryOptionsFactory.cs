@@ -36,5 +36,16 @@ namespace FCP.Cache
 
             return options;
         }
+
+        public static CacheEntryOptions Clone(this CacheEntryOptions options)
+        {
+            var cloneOptions = Create();
+
+            cloneOptions.CreatedUtc = options.CreatedUtc;
+            cloneOptions.ExpirationMode = options.ExpirationMode;
+            cloneOptions.ExpirationTimeout = options.ExpirationTimeout;
+
+            return cloneOptions;
+        }
     }
 }

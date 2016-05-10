@@ -8,6 +8,11 @@ namespace FCP.Cache
     public class CacheEntryOptions
     {
         /// <summary>
+        /// Get the create utc time
+        /// </summary>
+        public DateTime CreatedUtc { get; set; }
+
+        /// <summary>
         /// Gets the expiration mode.
         /// </summary>
         /// <value>The expiration mode.</value>
