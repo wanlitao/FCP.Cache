@@ -22,13 +22,13 @@ namespace FCP.Cache.Redis.ConsoleTest
         {
             using (var redisCache = sentinelManager.GetRedisCacheProvider())
             {                        
-                redisCacheAction(redisCache);               
+                redisCacheAction(redisCache);
 
                 Console.Write(Environment.NewLine);
                 Console.WriteLine("Please change the redis master slave state.........");
-                Console.ReadLine();                
+                Console.ReadLine();
                 
-                redisCacheAction(redisCache);                
+                redisCacheAction(redisCache);
             }
         }
 
@@ -36,13 +36,13 @@ namespace FCP.Cache.Redis.ConsoleTest
         {
             using (var redisCache = sentinelManager.GetRedisCacheProvider())
             {
-                redisCacheAsyncAction(redisCache).Wait();                
+                redisCacheAsyncAction(redisCache).Wait();
 
                 Console.Write(Environment.NewLine);
                 Console.WriteLine("Please change the redis master slave state.........");
-                Console.ReadLine();                
+                Console.ReadLine();
                 
-                redisCacheAsyncAction(redisCache).Wait();                
+                redisCacheAsyncAction(redisCache).Wait();
             }
         }
 

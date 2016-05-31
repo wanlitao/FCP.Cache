@@ -103,12 +103,12 @@ namespace FCP.Cache.Service
         #endregion
 
         #region GetOrAdd
-        public TValue GetOrAdd<TValue>(string key, TValue value, CacheEntryOptions options)
+        public TValue GetOrAdd<TValue>(string key, Func<string, TValue> valueFactory, CacheEntryOptions options)
         {
-            return GetOrAdd(key, value, options, null);
+            return GetOrAdd(key, valueFactory, options, null);
         }
 
-        public virtual TValue GetOrAdd<TValue>(string key, TValue value, CacheEntryOptions options, string region)
+        public virtual TValue GetOrAdd<TValue>(string key, Func<string, TValue> valueFactory, CacheEntryOptions options, string region)
         {
             var cacheEntry = GetCacheEntry<TValue>(key, region);
 
@@ -117,16 +117,18 @@ namespace FCP.Cache.Service
                 return cacheEntry.Value;
             }
 
+            var value = valueFactory(key);
             Set(key, value, options, region);
+
             return value;
         }
 
-        public Task<TValue> GetOrAddAsync<TValue>(string key, TValue value, CacheEntryOptions options)
+        public Task<TValue> GetOrAddAsync<TValue>(string key, Func<string, Task<TValue>> valueAsyncFactory, CacheEntryOptions options)
         {
-            return GetOrAddAsync(key, value, options, null);
+            return GetOrAddAsync(key, valueAsyncFactory, options, null);
         }
 
-        public virtual async Task<TValue> GetOrAddAsync<TValue>(string key, TValue value, CacheEntryOptions options, string region)
+        public virtual async Task<TValue> GetOrAddAsync<TValue>(string key, Func<string, Task<TValue>> valueAsyncFactory, CacheEntryOptions options, string region)
         {
             var cacheEntry = await GetCacheEntryAsync<TValue>(key, region).ConfigureAwait(false);
 
@@ -135,7 +137,9 @@ namespace FCP.Cache.Service
                 return cacheEntry.Value;
             }
 
+            var value = await valueAsyncFactory(key).ConfigureAwait(false);
             await SetAsync(key, value, options, region).ConfigureAwait(false);
+
             return value;
         }
         #endregion
