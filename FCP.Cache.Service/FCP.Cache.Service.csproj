@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseCacheService.cs" />
+    <Compile Include="ConcurrentTaskManager.cs" />
     <Compile Include="Extensions\CacheServiceExtensions.cs" />
     <Compile Include="Interfaces\ICacheService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
