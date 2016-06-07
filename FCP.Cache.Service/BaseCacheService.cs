@@ -5,6 +5,8 @@ namespace FCP.Cache.Service
 {
     public abstract class BaseCacheService : BaseDistributedCacheProvider, ICacheService
     {
+        protected readonly ConcurrentTaskManager _taskManager = new ConcurrentTaskManager();
+
         protected abstract IDistributedCacheProvider[] CacheProviders { get; }
 
         #region Cache Synchronize
@@ -117,10 +119,16 @@ namespace FCP.Cache.Service
                 return cacheEntry.Value;
             }
 
-            var value = valueFactory(key);
-            Set(key, value, options, region);
+            var task = _taskManager.GetOrAdd(key, () =>
+            {
+                var value = valueFactory(key);
+                Set(key, value, options, region);
 
-            return value;
+                return Task.FromResult(value);
+            });            
+
+            var resultTask = task as Task<TValue>;
+            return resultTask.Result;
         }
 
         public Task<TValue> GetOrAddAsync<TValue>(string key, Func<string, Task<TValue>> valueAsyncFactory, CacheEntryOptions options)
@@ -137,10 +145,22 @@ namespace FCP.Cache.Service
                 return cacheEntry.Value;
             }
 
-            var value = await valueAsyncFactory(key).ConfigureAwait(false);
-            await SetAsync(key, value, options, region).ConfigureAwait(false);
+            var task = _taskManager.GetOrAdd(key, async () =>
+            {
+                Func<Task<TValue>> setValueTask = async () =>
+                {
+                    var value = await valueAsyncFactory(key).ConfigureAwait(false);
+                    await SetAsync(key, value, options, region).ConfigureAwait(false);
 
-            return value;
+                    return value;
+                };
+
+                await setValueTask();
+            });
+            await task;
+
+            var resultTask = task as Task<TValue>;
+            return resultTask.Result;
         }
         #endregion
 
