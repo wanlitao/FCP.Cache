@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace FCP.Cache.Service
@@ -7,7 +8,7 @@ namespace FCP.Cache.Service
     {
         protected readonly ConcurrentTaskManager _taskManager = new ConcurrentTaskManager();
 
-        protected abstract IDistributedCacheProvider[] CacheProviders { get; }
+        protected abstract IReadOnlyList<IDistributedCacheProvider> CacheProviders { get; }
 
         #region Cache Synchronize
         /// <summary>
@@ -41,7 +42,7 @@ namespace FCP.Cache.Service
 
             var setEntry = GetSyncSetCacheEntry(entry);
 
-            for(var providerIndex = 0; providerIndex < CacheProviders.Length && providerIndex < foundIndex; providerIndex++)
+            for(var providerIndex = 0; providerIndex < CacheProviders.Count && providerIndex < foundIndex; providerIndex++)
             {
                 CacheProviders[providerIndex].Set(setEntry);
             }
@@ -56,7 +57,7 @@ namespace FCP.Cache.Service
 
                 var setEntry = GetSyncSetCacheEntry(entry);
 
-                for (var providerIndex = 0; providerIndex < CacheProviders.Length && providerIndex < foundIndex; providerIndex++)
+                for (var providerIndex = 0; providerIndex < CacheProviders.Count && providerIndex < foundIndex; providerIndex++)
                 {
                     await CacheProviders[providerIndex].SetAsync(setEntry).ConfigureAwait(false);
                 }
@@ -69,7 +70,7 @@ namespace FCP.Cache.Service
         {
             CacheEntry<string, TValue> entry = null;
 
-            for(var providerIndex = 0; providerIndex < CacheProviders.Length; providerIndex++)
+            for(var providerIndex = 0; providerIndex < CacheProviders.Count; providerIndex++)
             {
                 var provider = CacheProviders[providerIndex];
                 entry = provider.GetCacheEntry<TValue>(key, region);
@@ -88,7 +89,7 @@ namespace FCP.Cache.Service
         {
             CacheEntry<string, TValue> entry = null;
 
-            for (var providerIndex = 0; providerIndex < CacheProviders.Length; providerIndex++)
+            for (var providerIndex = 0; providerIndex < CacheProviders.Count; providerIndex++)
             {
                 var provider = CacheProviders[providerIndex];
                 entry = await provider.GetCacheEntryAsync<TValue>(key, region).ConfigureAwait(false);
