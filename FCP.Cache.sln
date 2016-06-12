@@ -15,6 +15,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FCP.Cache.Redis.ConsoleTest
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FCP.Cache.Service", "FCP.Cache.Service\FCP.Cache.Service.csproj", "{5C503C17-54E2-401C-AE99-45C0E0D81F84}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FCP.Cache.Service.Memory", "FCP.Cache.Service.Memory\FCP.Cache.Service.Memory.csproj", "{3E1056B0-FC77-4924-BF9D-CAB8B34C3E66}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FCP.Cache.Service.Redis", "FCP.Cache.Service.Redis\FCP.Cache.Service.Redis.csproj", "{0DE16B92-4FE4-498F-9682-1C146BCC1FD6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FCP.Cache.Service.Test", "FCP.Cache.Service.Test\FCP.Cache.Service.Test.csproj", "{4D573A27-3ABF-4BC6-9E3B-F97173F84915}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +51,18 @@ Global
 		{5C503C17-54E2-401C-AE99-45C0E0D81F84}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5C503C17-54E2-401C-AE99-45C0E0D81F84}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5C503C17-54E2-401C-AE99-45C0E0D81F84}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E1056B0-FC77-4924-BF9D-CAB8B34C3E66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E1056B0-FC77-4924-BF9D-CAB8B34C3E66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E1056B0-FC77-4924-BF9D-CAB8B34C3E66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E1056B0-FC77-4924-BF9D-CAB8B34C3E66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0DE16B92-4FE4-498F-9682-1C146BCC1FD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DE16B92-4FE4-498F-9682-1C146BCC1FD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DE16B92-4FE4-498F-9682-1C146BCC1FD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DE16B92-4FE4-498F-9682-1C146BCC1FD6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4D573A27-3ABF-4BC6-9E3B-F97173F84915}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D573A27-3ABF-4BC6-9E3B-F97173F84915}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D573A27-3ABF-4BC6-9E3B-F97173F84915}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D573A27-3ABF-4BC6-9E3B-F97173F84915}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

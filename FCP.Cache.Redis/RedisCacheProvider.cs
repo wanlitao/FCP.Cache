@@ -39,7 +39,7 @@ namespace FCP.Cache.Redis
         /// </summary>
         /// <param name="configuration"></param>
         /// <returns></returns>
-        protected static ConfigurationOptions ParseConfigurationOptions(string configuration)
+        public static ConfigurationOptions ParseConfigurationOptions(string configuration)
         {
             if (string.IsNullOrEmpty(configuration))
                 throw new ArgumentNullException(nameof(configuration));

@@ -127,14 +127,6 @@ namespace FCP.Cache.Redis
         #region IDisposable Support
         private bool disposedValue = false; // 要检测冗余调用
 
-        protected void CheckDisposed()
-        {
-            if (disposedValue)
-            {
-                throw new ObjectDisposedException(GetType().FullName);
-            }
-        }
-
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)
@@ -146,7 +138,7 @@ namespace FCP.Cache.Redis
                         ConnectionMultiplexer connection;
                         if (connectionDic.TryGetValue(_connectionString, out connection))
                         {
-                            connectionDic.Remove(_connectionString);
+                            connectionDic.Remove(_connectionString);                            
 
                             connection.Dispose();
                         }
