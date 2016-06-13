@@ -2,6 +2,6 @@
 {
     public class CacheServiceConfiguration
     {
-        public ICacheSerializer Serializer { get; set; }
+        public ICacheSerializer Serializer { get; set; }        
     }
 }

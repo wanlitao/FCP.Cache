@@ -15,7 +15,7 @@ namespace FCP.Cache.Service
         /// </summary>
         /// <param name="cacheProvider"></param>
         /// <returns></returns>
-        ICacheServiceBuilder UseCacheProvider(Func<CacheServiceConfiguration, ICacheProvider<string>> cacheProviderFactory);
+        ICacheServiceBuilder AddCacheProvider(Func<CacheServiceConfiguration, ICacheProvider<string>> cacheProviderFactory);
 
         /// <summary>
         /// Set the serializer

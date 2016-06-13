@@ -14,7 +14,7 @@ namespace FCP.Cache.Service
             Func<Task> newTaskFunc = () =>
             {
                 var task = taskFunc();
-                task = task.ContinueWith((t) => { TryRemove(key); });
+                task.ContinueWith((t) => { TryRemove(key); });
                 return task;
             };
             
@@ -29,26 +29,33 @@ namespace FCP.Cache.Service
         }
 
         private sealed class ConcurrentTask
-        {
-            private int _taskMutex = 0;           
+        {  
             private Func<Task> _taskFunc;
+
+            private object _taskMutex;
+            private Task _task;
 
             public ConcurrentTask(Func<Task> taskFunc)
             {
                 _taskFunc = taskFunc;
+
+                _taskMutex = new object();
+                _task = null;
             }
 
             public Task Task { get { return GetTask(); } }
 
             private Task GetTask()
             {
-                if (Interlocked.CompareExchange(ref _taskMutex, 1, 0) == 0)
+                lock(_taskMutex)
                 {
-                    Task task = _taskFunc == null ? null : _taskFunc();
-                    _taskFunc = () => { return task; };
+                    if (_task == null && _taskFunc != null)
+                    {
+                        _task = _taskFunc();
+                    }                    
                 }
 
-                return _taskFunc();
+                return _task;
             }
         }
     }

@@ -63,6 +63,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CacheServiceConcurrentTest.cs" />
+    <Compile Include="CacheServiceTest.cs" />
+    <Compile Include="Common\CacheServiceTestHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -82,9 +85,16 @@
       <Project>{5c503c17-54e2-401c-ae99-45c0e0d81f84}</Project>
       <Name>FCP.Cache.Service</Name>
     </ProjectReference>
+    <ProjectReference Include="..\FCP.Cache.Test\FCP.Cache.Test.csproj">
+      <Project>{d34a4a5d-c02b-4a65-9c2e-b2951c2f9033}</Project>
+      <Name>FCP.Cache.Test</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

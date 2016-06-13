@@ -14,7 +14,7 @@ namespace FCP.Cache.Service
             _cacheProviderFactories = new List<Func<CacheServiceConfiguration, ICacheProvider<string>>>();
         }
 
-        public ICacheServiceBuilder UseCacheProvider(Func<CacheServiceConfiguration, ICacheProvider<string>> cacheProviderFactory)
+        public ICacheServiceBuilder AddCacheProvider(Func<CacheServiceConfiguration, ICacheProvider<string>> cacheProviderFactory)
         {
             if (cacheProviderFactory == null)
                 throw new ArgumentNullException(nameof(cacheProviderFactory));

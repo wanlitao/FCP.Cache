@@ -23,7 +23,7 @@ namespace FCP.Cache.Test
 
             Assert.Equal("something", distributedCache.Get<string>(key));
 
-            Thread.Sleep(300);
+            Thread.Sleep(320);
 
             Assert.Null(distributedCache.Get<string>(key));
         }

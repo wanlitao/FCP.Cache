@@ -126,7 +126,7 @@ namespace FCP.Cache.Service
                 Set(key, value, options, region);
 
                 return Task.FromResult(value);
-            });            
+            });
 
             var resultTask = task as Task<TValue>;
             return resultTask.Result;
@@ -146,7 +146,7 @@ namespace FCP.Cache.Service
                 return cacheEntry.Value;
             }
 
-            var task = _taskManager.GetOrAdd(key, async () =>
+            var task = _taskManager.GetOrAdd(key, () =>
             {
                 Func<Task<TValue>> setValueTask = async () =>
                 {
@@ -156,7 +156,7 @@ namespace FCP.Cache.Service
                     return value;
                 };
 
-                await setValueTask();
+                return setValueTask();
             });
             await task;
 

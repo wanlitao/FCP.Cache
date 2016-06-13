@@ -4,13 +4,18 @@ namespace FCP.Cache.Service.Memory
 {
     public static class CacheServiceMemoryExtensions
     {
-        public static ICacheServiceBuilder UseMemoryCache(this ICacheServiceBuilder serviceBuilder, string name = null)
+        public static ICacheServiceBuilder AddMemoryCache(this ICacheServiceBuilder serviceBuilder)
         {
-            return serviceBuilder.UseCacheProvider((configuration) =>
+            return serviceBuilder.AddCacheProvider((configuration) =>
             {
-                if (string.IsNullOrEmpty(name))
-                    return MemoryCacheProvider.Default;
+                return MemoryCacheProvider.Default;
+            });
+        }
 
+        public static ICacheServiceBuilder AddMemoryCache(this ICacheServiceBuilder serviceBuilder, string name)
+        {
+            return serviceBuilder.AddCacheProvider((configuration) =>
+            {
                 return new MemoryCacheProvider(name);
             });
         }
