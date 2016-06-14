@@ -29,7 +29,7 @@ namespace FCP.Cache.Service
         }
 
         private sealed class ConcurrentTask
-        {  
+        {
             private Func<Task> _taskFunc;
 
             private object _taskMutex;
@@ -51,7 +51,7 @@ namespace FCP.Cache.Service
                 {
                     if (_task == null && _taskFunc != null)
                     {
-                        _task = _taskFunc();
+                        _task = _taskFunc();                        
                     }                    
                 }
 

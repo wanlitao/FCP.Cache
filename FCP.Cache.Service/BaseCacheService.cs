@@ -122,10 +122,7 @@ namespace FCP.Cache.Service
 
             var task = _taskManager.GetOrAdd(key, () =>
             {
-                var value = valueFactory(key);
-                Set(key, value, options, region);
-
-                return Task.FromResult(value);
+                return SetByValueFactory(key, valueFactory, options, region);
             });
 
             var resultTask = task as Task<TValue>;
@@ -148,21 +145,38 @@ namespace FCP.Cache.Service
 
             var task = _taskManager.GetOrAdd(key, () =>
             {
-                Func<Task<TValue>> setValueTask = async () =>
-                {
-                    var value = await valueAsyncFactory(key).ConfigureAwait(false);
-                    await SetAsync(key, value, options, region).ConfigureAwait(false);
+                var valueTask = valueAsyncFactory(key);
+                valueTask.Wait();
+                var value = valueTask.Result;
 
-                    return value;
-                };
-
-                return setValueTask();
+                return SetAsyncByValueFactory(key, () => { return value; }, options, region);
             });
-            await task;
+            await task.ConfigureAwait(false);
 
             var resultTask = task as Task<TValue>;
             return resultTask.Result;
         }
+
+        #region Set By ValueFactory
+        protected Task<TValue> SetByValueFactory<TValue>(string key, Func<string, TValue> valueFactory, CacheEntryOptions options, string region)
+        {
+            var value = valueFactory(key);
+            Set(key, value, options, region);
+
+            return Task.FromResult(value);
+        }
+
+        protected async Task<TValue> SetAsyncByValueFactory<TValue>(string key, Func<TValue> valueFactory, CacheEntryOptions options, string region)
+        {
+            await Task.Yield();
+
+            var value = valueFactory();
+            await SetAsync(key, value, options, region).ConfigureAwait(false);
+
+            return value;
+        }
+        #endregion
+
         #endregion
 
         #region Set

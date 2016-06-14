@@ -69,7 +69,7 @@ namespace FCP.Cache.Service.Test
             var key = Guid.NewGuid().ToString("N");
             var options = CacheEntryOptionsFactory.AbSolute().Timeout(TimeSpan.FromHours(1));
 
-            var cacheService = GetMemoryCacheService();
+            var cacheService = GetCacheService();
 
             var tasks = new List<Task>();
             _value = null;
@@ -77,35 +77,83 @@ namespace FCP.Cache.Service.Test
             //concurrent write
             for (int i = 0; i < 1000; i++)
             {
-                Func<Task> taskFunc = async () =>
+                Func<int, Task> taskFunc = async (j) =>
                 {
                     await Task.Yield();
-                    var value = await cacheService.GetOrAddAsync(key, ValueFactory, options).ConfigureAwait(false);
+                    var value = cacheService.GetOrAdd(key, ValueFactory, options);
                     Assert.Equal(_value, value);
                 };
 
-                tasks.Add(taskFunc());
+                tasks.Add(taskFunc(i));
             }
             Task.WaitAll(tasks.ToArray());
 
             //concurrent read
             for (int i = 0; i < 1000; i++)
             {
-                Func<Task> taskFunc = async () =>
+                Func<int, Task> taskFunc = async (j) =>
                 {
                     await Task.Yield();
-                    var value = await cacheService.GetOrAddAsync(key, ValueFactory, options).ConfigureAwait(false);
+                    var value = cacheService.GetOrAdd(key, ValueFactory, options);
                     Assert.Equal(_value, value);
                 };
 
-                tasks.Add(taskFunc());
+                tasks.Add(taskFunc(i));
+            }
+            Task.WaitAll(tasks.ToArray());
+        }
+
+        [Fact]
+        public void CacheService_GetOrAdd_Async_Concurrent()
+        {
+            var key = Guid.NewGuid().ToString("N");
+            var options = CacheEntryOptionsFactory.AbSolute().Timeout(TimeSpan.FromHours(1));
+
+            var cacheService = GetCacheService();
+
+            var tasks = new List<Task>();
+            _value = null;
+
+            //concurrent write
+            for (int i = 0; i < 50; i++)
+            {
+                Func<int, Task> taskFunc = async (j) =>
+                {
+                    await Task.Yield();
+                    var value = await cacheService.GetOrAddAsync(key, ValueAsyncFactory, options).ConfigureAwait(false);
+                    Assert.Equal(_value, value);
+                };
+
+                tasks.Add(taskFunc(i));
+            }
+            Task.WaitAll(tasks.ToArray());
+
+            //concurrent read
+            for (int i = 0; i < 1000; i++)
+            {
+                Func<int, Task> taskFunc = async (j) =>
+                {
+                    await Task.Yield();
+                    var value = await cacheService.GetOrAddAsync(key, ValueAsyncFactory, options).ConfigureAwait(false);
+                    Assert.Equal(_value, value);
+                };
+
+                tasks.Add(taskFunc(i));
             }
             Task.WaitAll(tasks.ToArray());
         }
 
         private volatile string _value = null;
 
-        private async Task<string> ValueFactory(string key)
+        private string ValueFactory(string key)
+        {
+            if (_value != null)
+                Assert.True(false, "重复创建值");
+
+            return _value = Path.GetRandomFileName();
+        }
+
+        private async Task<string> ValueAsyncFactory(string key)
         {
             await Task.Yield();
 
