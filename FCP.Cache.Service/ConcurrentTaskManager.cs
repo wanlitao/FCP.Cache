@@ -14,12 +14,12 @@ namespace FCP.Cache.Service
             Func<Task> newTaskFunc = () =>
             {
                 var task = taskFunc();
-                task.ContinueWith((t) => { TryRemove(key); });
+                task.ContinueWith((t) => { TryRemove(key); });                
                 return task;
             };
             
             var concurrentTask = _taskDict.GetOrAdd(key, new ConcurrentTask(newTaskFunc));
-            return concurrentTask.Task;
+            return concurrentTask.GetInnerTask();
         }
 
         public bool TryRemove(string key)
@@ -32,27 +32,30 @@ namespace FCP.Cache.Service
         {
             private Func<Task> _taskFunc;
 
-            private object _taskMutex;
+            private int _taskMutex;
             private Task _task;
 
             public ConcurrentTask(Func<Task> taskFunc)
             {
                 _taskFunc = taskFunc;
 
-                _taskMutex = new object();
+                _taskMutex = 0;
                 _task = null;
             }
 
-            public Task Task { get { return GetTask(); } }
-
-            private Task GetTask()
+            public Task GetInnerTask()
             {
-                lock(_taskMutex)
+                while (Interlocked.CompareExchange(ref _taskMutex, 2, 2) != 2)
                 {
-                    if (_task == null && _taskFunc != null)
+                    if (Interlocked.CompareExchange(ref _taskMutex, 1, 0) == 0)
                     {
-                        _task = _taskFunc();                        
-                    }                    
+                        if (_task == null && _taskFunc != null)
+                        {
+                            _task = _taskFunc();                            
+                        }
+                        Interlocked.Exchange(ref _taskMutex, 2);
+                        break;
+                    }
                 }
 
                 return _task;

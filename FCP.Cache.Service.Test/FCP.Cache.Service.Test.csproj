@@ -64,6 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CacheServiceConcurrentTest.cs" />
+    <Compile Include="CacheServiceEntrySyncTest.cs" />
     <Compile Include="CacheServiceTest.cs" />
     <Compile Include="Common\CacheServiceTestHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

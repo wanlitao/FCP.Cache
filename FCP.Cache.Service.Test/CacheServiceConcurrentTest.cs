@@ -109,13 +109,13 @@ namespace FCP.Cache.Service.Test
             var key = Guid.NewGuid().ToString("N");
             var options = CacheEntryOptionsFactory.AbSolute().Timeout(TimeSpan.FromHours(1));
 
-            var cacheService = GetCacheService();
+            var cacheService = GetMemoryCacheService();
 
             var tasks = new List<Task>();
             _value = null;
 
             //concurrent write
-            for (int i = 0; i < 50; i++)
+            for (int i = 0; i < 1000; i++)
             {
                 Func<int, Task> taskFunc = async (j) =>
                 {
