@@ -7,6 +7,7 @@ namespace FCP.Cache.Service
     public abstract class BaseCacheService : BaseDistributedCacheProvider, ICacheService
     {
         protected readonly ConcurrentTaskManager _taskManager = new ConcurrentTaskManager();
+        protected readonly ConcurrentTaskManager _valueTaskManager = new ConcurrentTaskManager();
 
         protected abstract IReadOnlyList<IDistributedCacheProvider> CacheProviders { get; }
 
@@ -28,29 +29,16 @@ namespace FCP.Cache.Service
             if (options.ExpirationMode == ExpirationMode.Absolute)
             {
                 //calc new expiration timeout to make the entry timeout at the same time in all cache providers
-                var newExpirationTimeout = options.CreatedUtc.Add(options.ExpirationTimeout) - DateTime.UtcNow;
+                var newExpirationTimeout = options.CreatedUtc.Add(options.ExpirationTimeout) - DateTime.UtcNow;                
                 options.Timeout(newExpirationTimeout);
             }
 
             return setEntry;
         }
 
-        protected void AddToCacheProviders<TValue>(CacheEntry<string, TValue> entry, int foundIndex)
+        protected Task AddToBeforeCacheProvidersAsync<TValue>(CacheEntry<string, TValue> entry, int foundIndex)
         {
-            if (entry == null || foundIndex < 1)
-                return;
-
-            var setEntry = GetSyncSetCacheEntry(entry);
-
-            for(var providerIndex = 0; providerIndex < CacheProviders.Count && providerIndex < foundIndex; providerIndex++)
-            {
-                CacheProviders[providerIndex].Set(setEntry);
-            }
-        }
-
-        protected Task AddToCacheProvidersAsync<TValue>(CacheEntry<string, TValue> entry, int foundIndex)
-        {
-            return Task.Run(async () =>
+            return Task.Run(() =>
             {
                 if (entry == null || foundIndex < 1)
                     return;
@@ -59,7 +47,23 @@ namespace FCP.Cache.Service
 
                 for (var providerIndex = 0; providerIndex < CacheProviders.Count && providerIndex < foundIndex; providerIndex++)
                 {
-                    await CacheProviders[providerIndex].SetAsync(setEntry).ConfigureAwait(false);
+                    CacheProviders[providerIndex].Set(setEntry);
+                }
+            });
+        }
+
+        protected Task AddToAfterCacheProvidersAsync<TValue>(CacheEntry<string, TValue> entry, int foundIndex)
+        {
+            return Task.Run(() =>
+            {
+                if (entry == null || foundIndex >= CacheProviders.Count - 1)
+                    return;
+
+                var setEntry = GetSyncSetCacheEntry(entry);
+
+                for (var providerIndex = foundIndex + 1; providerIndex < CacheProviders.Count; providerIndex++)
+                {
+                    CacheProviders[providerIndex].Set(setEntry);
                 }
             });
         }
@@ -77,7 +81,7 @@ namespace FCP.Cache.Service
 
                 if (entry != null)
                 {
-                    AddToCacheProviders(entry, providerIndex);  //sync the cache entry to before cache providers
+                    AddToBeforeCacheProvidersAsync(entry, providerIndex);  //sync the cache entry to before cache providers
                     break;
                 }
             }
@@ -96,7 +100,7 @@ namespace FCP.Cache.Service
 
                 if (entry != null)
                 {
-                    await AddToCacheProvidersAsync(entry, providerIndex);  //sync the cache entry to before cache providers
+                    AddToBeforeCacheProvidersAsync(entry, providerIndex);  //sync the cache entry to before cache providers
                     break;
                 }
             }
@@ -120,10 +124,9 @@ namespace FCP.Cache.Service
                 return cacheEntry.Value;
             }
 
-            var task = _taskManager.GetOrAdd(key, () => SetByValueFactory(key, valueFactory, options, region));
+            var setTask = _taskManager.GetOrAdd(key, () => SetByValueFactory(key, valueFactory, options, region)) as Task<TValue>;
 
-            var resultTask = task as Task<TValue>;
-            return resultTask.Result;
+            return setTask.Result;
         }
 
         public Task<TValue> GetOrAddAsync<TValue>(string key, Func<string, Task<TValue>> valueAsyncFactory, CacheEntryOptions options)
@@ -140,28 +143,27 @@ namespace FCP.Cache.Service
                 return cacheEntry.Value;
             }
 
-            var task = _taskManager.GetOrAdd(key, () => SetAsyncByValueFactory(key, valueAsyncFactory, options, region));
-            await task.ConfigureAwait(false);            
+            var valueTask = _valueTaskManager.GetOrAdd(key, () => valueAsyncFactory(key)) as Task<TValue>;
+            await valueTask.ConfigureAwait(false);                        
 
-            var resultTask = task as Task<TValue>;
-            return resultTask.Result;
+            var setTask = _taskManager.GetOrAdd(key, () => SetByValueFactory(key, (k) => { return valueTask.Result; }, options, region)) as Task<TValue>;
+           
+            return setTask.Result;
         }
 
         #region Set By ValueFactory
         protected Task<TValue> SetByValueFactory<TValue>(string key, Func<string, TValue> valueFactory, CacheEntryOptions options, string region)
         {
             var value = valueFactory(key);
-            Set(key, value, options, region);
+            
+            var entry = new CacheEntry<string, TValue>(key, region, value, options);
+            if (CacheProviders.Count > 0)
+            {
+                CacheProviders[0].Set(entry);
+                AddToAfterCacheProvidersAsync(entry, 0);
+            }
 
             return Task.FromResult(value);
-        }
-
-        protected async Task<TValue> SetAsyncByValueFactory<TValue>(string key, Func<string, Task<TValue>> valueAsyncFactory, CacheEntryOptions options, string region)
-        {
-            var value = await valueAsyncFactory(key).ConfigureAwait(false);
-            await SetAsync(key, value, options, region).ConfigureAwait(false);
-
-            return value;
         }
         #endregion
 

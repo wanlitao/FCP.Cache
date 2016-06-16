@@ -106,7 +106,7 @@ namespace FCP.Cache.Redis
 
             if (entry != null && entry.Options.ExpirationMode == ExpirationMode.Sliding)
             {                
-                Database.KeyExpire(fullKey, entry.Options.ExpirationTimeout, CommandFlags.FireAndForget);
+                Database.KeyExpire(fullKey, entry.Options.ExpirationTimeout, CommandFlags.PreferMaster);
             }
 
             return entry;
@@ -121,7 +121,7 @@ namespace FCP.Cache.Redis
 
             if (entry != null && entry.Options.ExpirationMode == ExpirationMode.Sliding)
             {
-                await database.KeyExpireAsync(fullKey, entry.Options.ExpirationTimeout, CommandFlags.FireAndForget).ConfigureAwait(false);
+                await database.KeyExpireAsync(fullKey, entry.Options.ExpirationTimeout, CommandFlags.PreferMaster).ConfigureAwait(false);
             }
 
             return entry;
@@ -131,6 +131,9 @@ namespace FCP.Cache.Redis
         #region Set
         protected override void SetInternal<TValue>(CacheEntry<string, TValue> entry)
         {
+            if (entry.IsInvalid)
+                return;
+
             var fullKey = GetEntryKey(entry.Key, entry.Region);
 
             entry.Options.CreatedUtc = DateTime.UtcNow;
@@ -141,17 +144,20 @@ namespace FCP.Cache.Redis
             var expireTimespan = entryOptions.ExpirationMode != ExpirationMode.None
                 ? entryOptions.ExpirationTimeout : default(TimeSpan?);
             
-            Database.KeyExpire(fullKey, expireTimespan, CommandFlags.FireAndForget);
+            Database.KeyExpire(fullKey, expireTimespan, CommandFlags.PreferMaster);
 
             //update region lookup
             if (!string.IsNullOrEmpty(entry.Region))
             {
-                Database.HashSet(entry.Region, fullKey, RedisCacheConstants.Region_HashField_Key_Val, When.Always, CommandFlags.FireAndForget);
+                Database.HashSet(entry.Region, fullKey, RedisCacheConstants.Region_HashField_Key_Val, When.Always, CommandFlags.PreferMaster);
             }
         }
 
         protected override async Task SetInternalAsync<TValue>(CacheEntry<string, TValue> entry)
         {
+            if (entry.IsInvalid)
+                return;
+
             var fullKey = GetEntryKey(entry.Key, entry.Region);
             var database = await DatabaseAsync().ConfigureAwait(false);
 
@@ -163,13 +169,13 @@ namespace FCP.Cache.Redis
             var expireTimespan = entryOptions.ExpirationMode != ExpirationMode.None
                 ? entryOptions.ExpirationTimeout : default(TimeSpan?);
 
-            await database.KeyExpireAsync(fullKey, expireTimespan, CommandFlags.FireAndForget).ConfigureAwait(false);
+            await database.KeyExpireAsync(fullKey, expireTimespan, CommandFlags.PreferMaster).ConfigureAwait(false);
 
             //update region lookup
             if (!string.IsNullOrEmpty(entry.Region))
             {
                 await database.HashSetAsync(entry.Region, fullKey, RedisCacheConstants.Region_HashField_Key_Val,
-                    When.Always, CommandFlags.FireAndForget).ConfigureAwait(false);
+                    When.Always, CommandFlags.PreferMaster).ConfigureAwait(false);
             }
         }
         #endregion

@@ -133,6 +133,9 @@ namespace FCP.Cache.Memory
         #region Set
         protected override void SetInternal<TValue>(CacheEntry<string, TValue> entry)
         {
+            if (entry.IsInvalid)
+                return;
+
             var fullKey = GetEntryKey(entry.Key, entry.Region);
             var cachePolicy = BuildCachePolicy(entry);
 

@@ -39,6 +39,8 @@ namespace FCP.Cache
         public CacheEntryOptions Options { get; private set; }
 
         public string Region { get; private set; }
+
+        public bool IsInvalid { get { return !Options.IsValid; } }
         
         /// <summary>
         /// Get Clone Entry

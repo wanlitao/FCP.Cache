@@ -23,5 +23,16 @@ namespace FCP.Cache
         /// </summary>
         /// <value>The expiration timeout.</value>
         public TimeSpan ExpirationTimeout { get; set; }
+
+        /// <summary>
+        /// Get the Valid State
+        /// </summary>
+        public bool IsValid
+        {
+            get
+            {
+                return !(ExpirationMode != ExpirationMode.None && ExpirationTimeout <= TimeSpan.Zero);
+            }
+        }
     }
 }

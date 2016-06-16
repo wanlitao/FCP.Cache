@@ -14,7 +14,7 @@ namespace FCP.Cache.Service
             Func<Task> newTaskFunc = () =>
             {
                 var task = taskFunc();
-                task.ContinueWith((t) => { TryRemove(key); });                
+                task.ContinueWith((t) => { TryRemove(key); });
                 return task;
             };
             
@@ -51,8 +51,8 @@ namespace FCP.Cache.Service
                     {
                         if (_task == null && _taskFunc != null)
                         {
-                            _task = _taskFunc();                            
-                        }
+                            _task = _taskFunc();
+                        }                        
                         Interlocked.Exchange(ref _taskMutex, 2);
                         break;
                     }

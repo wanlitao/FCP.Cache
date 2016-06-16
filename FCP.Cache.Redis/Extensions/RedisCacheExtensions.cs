@@ -86,7 +86,7 @@ namespace FCP.Cache.Redis
 
             var hashEntries = ConvertHashEntry(entry, valueConverter);
 
-            cache.HashSet(key, hashEntries, CommandFlags.FireAndForget);
+            cache.HashSet(key, hashEntries, CommandFlags.PreferMaster);
         }
 
         internal static async Task HashEntrySetAsync<TValue>(this IDatabase cache, string key, CacheEntry<string, TValue> entry, IRedisValueConverter valueConverter)
@@ -96,7 +96,7 @@ namespace FCP.Cache.Redis
 
             var hashEntries = ConvertHashEntry(entry, valueConverter);
 
-            await cache.HashSetAsync(key, hashEntries, CommandFlags.FireAndForget).ConfigureAwait(false);
+            await cache.HashSetAsync(key, hashEntries, CommandFlags.PreferMaster).ConfigureAwait(false);
         }
         #endregion
 

@@ -34,16 +34,16 @@ namespace FCP.Cache.Test
             var distributedCache = GetDistributedCache();
 
             var key = Guid.NewGuid().ToString("N");
-            var options = CacheEntryOptionsFactory.Sliding().Timeout(TimeSpan.FromMilliseconds(300));
+            var options = CacheEntryOptionsFactory.Sliding().Timeout(TimeSpan.FromMilliseconds(500));
             distributedCache.Set(key, "something", options);
 
-            Thread.Sleep(250);
+            Thread.Sleep(400);
             Assert.Equal("something", distributedCache.Get<string>(key));
 
-            Thread.Sleep(250);
+            Thread.Sleep(400);
             Assert.Equal("something", distributedCache.Get<string>(key));
 
-            Thread.Sleep(350);
+            Thread.Sleep(600);
             Assert.Null(distributedCache.Get<string>(key));
 
             options = CacheEntryOptionsFactory.Sliding().Timeout(TimeSpan.FromSeconds(2));

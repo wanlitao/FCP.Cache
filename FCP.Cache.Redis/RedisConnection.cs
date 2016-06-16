@@ -1,6 +1,6 @@
 ﻿using System;
 using StackExchange.Redis;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
 using System.IO;
@@ -12,8 +12,7 @@ namespace FCP.Cache.Redis
     /// </summary>
     public class RedisConnection : IDisposable
     {
-        private static IDictionary<string, ConnectionMultiplexer> connectionDic = new Dictionary<string, ConnectionMultiplexer>();
-        private static object connectLock = new object();
+        private static ConcurrentDictionary<string, ConnectionMultiplexer> connectionDict = new ConcurrentDictionary<string, ConnectionMultiplexer>();        
 
         private readonly string _connectionString;
         private readonly ConfigurationOptions _configOptions;
@@ -47,44 +46,26 @@ namespace FCP.Cache.Redis
         #region Connect
         public ConnectionMultiplexer Connect(TextWriter connectLogger = null)
         {
-            ConnectionMultiplexer connection;
-            if (!connectionDic.TryGetValue(_connectionString, out connection))
+            return connectionDict.GetOrAdd(_connectionString, (connectionStr) =>
             {
-                lock (connectLock)
-                {
-                    if (!connectionDic.TryGetValue(_connectionString, out connection))
-                    {
-                        connection = ConnectionMultiplexer.Connect(_configOptions, connectLogger);
+                var connection = ConnectionMultiplexer.Connect(_configOptions, connectLogger);
 
-                        CheckConnection(connection);
+                CheckConnection(connection);
 
-                        connectionDic.Add(_connectionString, connection);
-                    }
-                }
-            }
-
-            return connection;
+                return connection;
+            });
         }
 
         public async Task<ConnectionMultiplexer> ConnectAsync(TextWriter connectLogger = null)
         {
             ConnectionMultiplexer connection;
-            if (!connectionDic.TryGetValue(_connectionString, out connection))
+            if (!connectionDict.TryGetValue(_connectionString, out connection))
             {
                 connection = await ConnectionMultiplexer.ConnectAsync(_configOptions, connectLogger).ConfigureAwait(false);
 
                 CheckConnection(connection);
 
-                if (!connectionDic.ContainsKey(_connectionString))
-                {
-                    lock(connectLock)
-                    {
-                        if (!connectionDic.ContainsKey(_connectionString))
-                        {
-                            connectionDic.Add(_connectionString, connection);
-                        } 
-                    }
-                }                                    
+                connection = connectionDict.GetOrAdd(_connectionString, connection);                                                    
             }
 
             return connection;
@@ -133,16 +114,11 @@ namespace FCP.Cache.Redis
             {
                 if (disposing)
                 {
-                    lock(connectLock)
+                    ConnectionMultiplexer connection;
+                    if (connectionDict.TryRemove(_connectionString, out connection))
                     {
-                        ConnectionMultiplexer connection;
-                        if (connectionDic.TryGetValue(_connectionString, out connection))
-                        {
-                            connectionDic.Remove(_connectionString);                            
-
-                            connection.Dispose();
-                        }
-                    }                   
+                        connection.Dispose();
+                    }
                 }
                 disposedValue = true;
             }
