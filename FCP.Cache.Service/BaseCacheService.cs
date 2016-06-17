@@ -6,8 +6,7 @@ namespace FCP.Cache.Service
 {
     public abstract class BaseCacheService : BaseDistributedCacheProvider, ICacheService
     {
-        protected readonly ConcurrentTaskManager _taskManager = new ConcurrentTaskManager();
-        protected readonly ConcurrentTaskManager _valueTaskManager = new ConcurrentTaskManager();
+        protected readonly ConcurrentTaskManager _taskManager = new ConcurrentTaskManager();        
 
         protected abstract IReadOnlyList<IDistributedCacheProvider> CacheProviders { get; }
 
@@ -124,9 +123,7 @@ namespace FCP.Cache.Service
                 return cacheEntry.Value;
             }
 
-            var setTask = _taskManager.GetOrAdd(key, () => SetByValueFactory(key, valueFactory, options, region)) as Task<TValue>;
-
-            return setTask.Result;
+            return _taskManager.GetTaskResult(key, () => SetByValueFactory(key, valueFactory, options, region));
         }
 
         public Task<TValue> GetOrAddAsync<TValue>(string key, Func<string, Task<TValue>> valueAsyncFactory, CacheEntryOptions options)
@@ -136,19 +133,15 @@ namespace FCP.Cache.Service
 
         public virtual async Task<TValue> GetOrAddAsync<TValue>(string key, Func<string, Task<TValue>> valueAsyncFactory, CacheEntryOptions options, string region)
         {
-            var cacheEntry = await GetCacheEntryAsync<TValue>(key, region).ConfigureAwait(false);
+            var cacheEntry = GetCacheEntry<TValue>(key, region);
 
             if (cacheEntry != null && string.Compare(cacheEntry.Key, key, true) == 0)
             {
                 return cacheEntry.Value;
             }
 
-            var valueTask = _valueTaskManager.GetOrAdd(key, () => valueAsyncFactory(key)) as Task<TValue>;
-            await valueTask.ConfigureAwait(false);                        
-
-            var setTask = _taskManager.GetOrAdd(key, () => SetByValueFactory(key, (k) => { return valueTask.Result; }, options, region)) as Task<TValue>;
-           
-            return setTask.Result;
+            return await _taskManager.GetTaskResultAsync(key,
+                () => SetAsyncByValueFactory(key, valueAsyncFactory, options, region)).ConfigureAwait(false);
         }
 
         #region Set By ValueFactory
@@ -164,6 +157,20 @@ namespace FCP.Cache.Service
             }
 
             return Task.FromResult(value);
+        }
+
+        protected async Task<TValue> SetAsyncByValueFactory<TValue>(string key, Func<string, Task<TValue>> valueAsyncFactory, CacheEntryOptions options, string region)
+        {
+            var value = await valueAsyncFactory(key).ConfigureAwait(false);
+
+            var entry = new CacheEntry<string, TValue>(key, region, value, options);
+            if (CacheProviders.Count > 0)
+            {
+                await CacheProviders[0].SetAsync(entry).ConfigureAwait(false);
+                AddToAfterCacheProvidersAsync(entry, 0);
+            }            
+
+            return value;
         }
         #endregion
 

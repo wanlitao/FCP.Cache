@@ -9,7 +9,21 @@ namespace FCP.Cache.Service
     {
         private readonly ConcurrentDictionary<string, ConcurrentTask> _taskDict = new ConcurrentDictionary<string, ConcurrentTask>();
 
-        public Task GetOrAdd(string key, Func<Task> taskFunc)
+        public TResult GetTaskResult<TResult>(string key, Func<Task<TResult>> taskFunc)
+        {
+            var concurrentTask = GetOrAddConcurrentTask(key, taskFunc);
+
+            return concurrentTask.GetInnerTaskResult<TResult>();
+        }
+
+        public async Task<TResult> GetTaskResultAsync<TResult>(string key, Func<Task<TResult>> taskFunc)
+        {
+            var concurrentTask = GetOrAddConcurrentTask(key, taskFunc);
+
+            return await concurrentTask.GetInnerTaskResultAsync<TResult>().ConfigureAwait(false);
+        }
+
+        private ConcurrentTask GetOrAddConcurrentTask(string key, Func<Task> taskFunc)
         {
             Func<Task> newTaskFunc = () =>
             {
@@ -17,9 +31,8 @@ namespace FCP.Cache.Service
                 task.ContinueWith((t) => { TryRemove(key); });
                 return task;
             };
-            
-            var concurrentTask = _taskDict.GetOrAdd(key, new ConcurrentTask(newTaskFunc));
-            return concurrentTask.GetInnerTask();
+
+            return _taskDict.GetOrAdd(key, new ConcurrentTask(newTaskFunc));
         }
 
         public bool TryRemove(string key)
@@ -31,34 +44,64 @@ namespace FCP.Cache.Service
         private sealed class ConcurrentTask
         {
             private Func<Task> _taskFunc;
+           
+            private SemaphoreSlim semaphoreSlim;
 
-            private int _taskMutex;
             private Task _task;
 
             public ConcurrentTask(Func<Task> taskFunc)
             {
                 _taskFunc = taskFunc;
 
-                _taskMutex = 0;
+                semaphoreSlim = new SemaphoreSlim(1);
                 _task = null;
             }
 
-            public Task GetInnerTask()
+            public TResult GetInnerTaskResult<TResult>()
             {
-                while (Interlocked.CompareExchange(ref _taskMutex, 2, 2) != 2)
+                semaphoreSlim.Wait();
+                try
                 {
-                    if (Interlocked.CompareExchange(ref _taskMutex, 1, 0) == 0)
+                    if (_task == null && _taskFunc != null)
                     {
-                        if (_task == null && _taskFunc != null)
-                        {
-                            _task = _taskFunc();
-                        }                        
-                        Interlocked.Exchange(ref _taskMutex, 2);
-                        break;
+                        _task = _taskFunc();
+                        _task.Wait();
                     }
                 }
+                finally
+                {
+                    semaphoreSlim.Release();
+                }                
 
-                return _task;
+                return GetCompleteTaskResult<TResult>();
+            }
+
+            public async Task<TResult> GetInnerTaskResultAsync<TResult>()
+            {                
+                await semaphoreSlim.WaitAsync();
+                try
+                {
+                    if (_task == null && _taskFunc != null)
+                    {
+                        _task = _taskFunc();
+                        await _task.ConfigureAwait(false);
+                    }
+                }
+                finally
+                {
+                    semaphoreSlim.Release();
+                }
+
+                return GetCompleteTaskResult<TResult>();
+            }
+
+            private TResult GetCompleteTaskResult<TResult>()
+            {
+                var resultTask = _task as Task<TResult>;
+                if (resultTask == null)
+                    return default(TResult);
+
+                return resultTask.Result;
             }
         }
     }

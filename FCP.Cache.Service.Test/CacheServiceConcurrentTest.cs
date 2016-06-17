@@ -14,11 +14,6 @@ namespace FCP.Cache.Service.Test
             return CacheServiceTestHelper.GetCacheService();
         }
 
-        protected ICacheService GetMemoryCacheService()
-        {
-            return CacheServiceTestHelper.GetMemoryCacheService();
-        }
-
         [Fact]
         public void CacheService_GetOrAdd()
         {
@@ -115,7 +110,7 @@ namespace FCP.Cache.Service.Test
             _value = null;
 
             //concurrent write
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 1000; i++)
             {
                 Func<int, Task> taskFunc = async (j) =>
                 {
