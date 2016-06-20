@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace FCP.Cache.Service
+namespace FCP.Cache
 {
     public class ConcurrentTaskManager
     {

@@ -49,7 +49,6 @@
     <Compile Include="Builder\CacheServiceConfiguration.cs" />
     <Compile Include="Extensions\CacheServiceBuilderExtensions.cs" />
     <Compile Include="Interfaces\ICacheServiceBuilder.cs" />
-    <Compile Include="ConcurrentTaskManager.cs" />
     <Compile Include="DefaultCacheService.cs" />
     <Compile Include="Extensions\CacheServiceExtensions.cs" />
     <Compile Include="Interfaces\ICacheService.cs" />

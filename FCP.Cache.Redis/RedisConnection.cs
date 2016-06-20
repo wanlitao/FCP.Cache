@@ -12,7 +12,8 @@ namespace FCP.Cache.Redis
     /// </summary>
     public class RedisConnection : IDisposable
     {
-        private static ConcurrentDictionary<string, ConnectionMultiplexer> connectionDict = new ConcurrentDictionary<string, ConnectionMultiplexer>();        
+        private static ConcurrentDictionary<string, ConnectionMultiplexer> connectionDict = new ConcurrentDictionary<string, ConnectionMultiplexer>();
+        private static ConcurrentTaskManager _taskManager = new ConcurrentTaskManager();        
 
         private readonly string _connectionString;
         private readonly ConfigurationOptions _configOptions;
@@ -48,11 +49,20 @@ namespace FCP.Cache.Redis
         {
             return connectionDict.GetOrAdd(_connectionString, (connectionStr) =>
             {
-                var connection = ConnectionMultiplexer.Connect(_configOptions, connectLogger);
+                return _taskManager.GetTaskResult(connectionStr, () =>
+                {
+                    //again check to avoid the ConnectionMultiplexer.Connect execute more than once in concurrent state
+                    var connection = connectionDict.GetOrAdd(connectionStr, (connectStr) =>
+                    {
+                        var multiplexer = ConnectionMultiplexer.Connect(_configOptions, connectLogger);
 
-                CheckConnection(connection);
+                        CheckConnection(multiplexer);
 
-                return connection;
+                        return multiplexer;
+                    });
+
+                    return Task.FromResult(connection);                    
+                });
             });
         }
 
@@ -61,11 +71,22 @@ namespace FCP.Cache.Redis
             ConnectionMultiplexer connection;
             if (!connectionDict.TryGetValue(_connectionString, out connection))
             {
-                connection = await ConnectionMultiplexer.ConnectAsync(_configOptions, connectLogger).ConfigureAwait(false);
+                connection = await _taskManager.GetTaskResultAsync(_connectionString, async () =>
+                {
+                    ConnectionMultiplexer multiplexer;
+                    //again check to avoid the ConnectionMultiplexer.Connect execute more than once in concurrent state
+                    if (!connectionDict.TryGetValue(_connectionString, out multiplexer))
+                    {
+                        multiplexer = await ConnectionMultiplexer.ConnectAsync(_configOptions, connectLogger).ConfigureAwait(false);
 
-                CheckConnection(connection);
+                        CheckConnection(multiplexer);
 
-                connection = connectionDict.GetOrAdd(_connectionString, connection);                                                    
+                        multiplexer = connectionDict.GetOrAdd(_connectionString, multiplexer);
+                    }
+
+                    return multiplexer;
+
+                }).ConfigureAwait(false);
             }
 
             return connection;

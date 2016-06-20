@@ -50,6 +50,7 @@
     <Compile Include="CacheProviderDistributedWrapper.cs" />
     <Compile Include="Common\CacheEntry.cs" />
     <Compile Include="Common\CacheEntryOptions.cs" />
+    <Compile Include="ConcurrentTaskManager.cs" />
     <Compile Include="Extensions\CacheProviderExtensions.cs" />
     <Compile Include="Extensions\DistributedCacheProviderExtensions.cs" />
     <Compile Include="Common\ExpirationMode.cs" />
