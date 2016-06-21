@@ -22,7 +22,7 @@ namespace FCP.Cache
             SerializerSettings = settings;
         }
 
-        public JsonSerializerSettings SerializerSettings { get; }
+        public JsonSerializerSettings SerializerSettings { get; private set; }
 
         public byte[] Serialize<TValue>(TValue value)
         {
