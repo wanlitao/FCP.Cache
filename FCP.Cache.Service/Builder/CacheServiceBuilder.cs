@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using FCP.Util;
 
 namespace FCP.Cache.Service
 {
@@ -24,7 +25,7 @@ namespace FCP.Cache.Service
             return this;
         }
 
-        public ICacheServiceBuilder UseSerializer(ICacheSerializer serializer)
+        public ICacheServiceBuilder UseSerializer(ISerializer serializer)
         {
             if (serializer == null)
                 throw new ArgumentNullException(nameof(serializer));

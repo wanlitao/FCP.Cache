@@ -1,5 +1,6 @@
 ﻿using System;
 using StackExchange.Redis;
+using FCP.Util;
 
 namespace FCP.Cache.Redis
 {
@@ -9,8 +10,8 @@ namespace FCP.Cache.Redis
 
         RedisCacheProvider GetRedisCacheProvider(Action<ConfigurationOptions> configurationSettings);
 
-        RedisCacheProvider GetRedisCacheProvider(ICacheSerializer cacheSerializer);
+        RedisCacheProvider GetRedisCacheProvider(ISerializer cacheSerializer);
 
-        RedisCacheProvider GetRedisCacheProvider(Action<ConfigurationOptions> configurationSettings, ICacheSerializer cacheSerializer);
+        RedisCacheProvider GetRedisCacheProvider(Action<ConfigurationOptions> configurationSettings, ISerializer cacheSerializer);
     }
 }

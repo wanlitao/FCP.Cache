@@ -14,7 +14,7 @@ namespace FCP.Cache.Memory
         private volatile MemoryCache _cache = null;
         private string _instanceKey = null;
         
-        private MemoryCacheProvider()                       
+        private MemoryCacheProvider()
         {
             _cacheName = defaultName;
             _cache = MemoryCache.Default;

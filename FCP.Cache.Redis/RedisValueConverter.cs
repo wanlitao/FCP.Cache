@@ -1,5 +1,6 @@
 ﻿using System;
 using StackExchange.Redis;
+using FCP.Util;
 
 namespace FCP.Cache.Redis
 {
@@ -30,9 +31,9 @@ namespace FCP.Cache.Redis
         IRedisValueConverter<long>,
         IRedisValueConverter<long?>
     {
-        private readonly ICacheSerializer _serializer;        
+        private readonly ISerializer _serializer;        
 
-        public RedisValueConverter(ICacheSerializer serializer)
+        public RedisValueConverter(ISerializer serializer)
         {
             if (serializer == null)
                 throw new ArgumentNullException(nameof(serializer));

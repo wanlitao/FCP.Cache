@@ -1,7 +1,9 @@
-﻿namespace FCP.Cache.Service
+﻿using FCP.Util;
+
+namespace FCP.Cache.Service
 {
     public class CacheServiceConfiguration
     {
-        public ICacheSerializer Serializer { get; set; }        
+        public ISerializer Serializer { get; set; }
     }
 }

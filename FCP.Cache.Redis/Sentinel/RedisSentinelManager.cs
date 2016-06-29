@@ -4,6 +4,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Net;
 using System.IO;
+using FCP.Util;
 
 namespace FCP.Cache.Redis
 {
@@ -230,12 +231,12 @@ namespace FCP.Cache.Redis
             return GetRedisCacheProvider(configurationSettings, null);
         }
 
-        public RedisCacheProvider GetRedisCacheProvider(ICacheSerializer cacheSerializer)
+        public RedisCacheProvider GetRedisCacheProvider(ISerializer cacheSerializer)
         {
             return GetRedisCacheProvider(null, cacheSerializer);
         }
 
-        public RedisCacheProvider GetRedisCacheProvider(Action<ConfigurationOptions> configurationSettings, ICacheSerializer cacheSerializer)
+        public RedisCacheProvider GetRedisCacheProvider(Action<ConfigurationOptions> configurationSettings, ISerializer cacheSerializer)
         {
             var sentinelServer = GetValidSentinelServer();
 

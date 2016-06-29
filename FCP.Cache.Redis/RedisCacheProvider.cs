@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using FCP.Util;
 
 namespace FCP.Cache.Redis
 {
@@ -17,10 +18,10 @@ namespace FCP.Cache.Redis
         { }
 
         public RedisCacheProvider(ConfigurationOptions configOptions)
-            : this(configOptions, new JsonCacheSerializer())
+            : this(configOptions, SerializerFactory.JsonSerializer)
         { }
 
-        public RedisCacheProvider(ConfigurationOptions configOptions, ICacheSerializer serializer)
+        public RedisCacheProvider(ConfigurationOptions configOptions, ISerializer serializer)
         {
             if (configOptions == null)
                 throw new ArgumentNullException(nameof(configOptions));

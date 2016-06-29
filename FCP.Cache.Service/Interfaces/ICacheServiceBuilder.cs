@@ -1,4 +1,5 @@
 ﻿using System;
+using FCP.Util;
 
 namespace FCP.Cache.Service
 {
@@ -22,6 +23,6 @@ namespace FCP.Cache.Service
         /// </summary>
         /// <param name="serializer"></param>
         /// <returns></returns>
-        ICacheServiceBuilder UseSerializer(ICacheSerializer serializer);
+        ICacheServiceBuilder UseSerializer(ISerializer serializer);
     }
 }
