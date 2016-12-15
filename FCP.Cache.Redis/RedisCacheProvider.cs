@@ -277,14 +277,11 @@ namespace FCP.Cache.Redis
         #endregion
 
         #region IDisposable Support
-        protected override void Dispose(bool disposing)
+        protected override void DisposeInternal()
         {
-            if (disposing)
-            {
-                _connection.Dispose();
-            }
-            base.Dispose(disposing);
-        }
+            _connection.Dispose();
+            base.DisposeInternal();
+        }       
         #endregion
     }
 }

@@ -214,13 +214,10 @@ namespace FCP.Cache.Memory
         #endregion
 
         #region IDisposable Support
-        protected override void Dispose(bool disposing)
+        protected override void DisposeInternal()
         {
-            if (disposing)
-            {
-                _cache.Dispose();                
-            }
-            base.Dispose(disposing);
+            _cache.Dispose();
+            base.DisposeInternal();
         }
         #endregion
     }

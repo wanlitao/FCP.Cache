@@ -11,10 +11,9 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>    
     <copyright>$copyright$</copyright>
-    <dependencies>
-      <dependency id="FCP.Cache.Core" version="0.5.2" />      
-      <dependency id="FCP.Cache.Redis" version="0.5.2" />
-      <dependency id="FCP.Cache.Service" version="0.5.2" />
+    <dependencies>      
+      <dependency id="FCP.Cache.Redis" version="0.5.3" />
+      <dependency id="FCP.Cache.Service" version="0.5.3" />
     </dependencies>
   </metadata>
 </package>

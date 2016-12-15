@@ -6,13 +6,13 @@ namespace FCP.Cache
     /// <summary>
     /// Distributed Wrapper for Cache Provider
     /// </summary>
-    internal class CacheProviderDistributedWrapper : IDistributedCacheProvider
+    internal class CacheProviderDistributedDecorator : IDistributedCacheProvider
     {
         internal static readonly Task CompletedTask = Task.FromResult<object>(null);
 
         private ICacheProvider<string> _localCacheProvider;
 
-        internal CacheProviderDistributedWrapper(ICacheProvider<string> cacheProvider)
+        internal CacheProviderDistributedDecorator(ICacheProvider<string> cacheProvider)
         {
             if (cacheProvider == null)
                 throw new ArgumentNullException(nameof(cacheProvider));
@@ -167,7 +167,7 @@ namespace FCP.Cache
             }
         }
         
-        ~CacheProviderDistributedWrapper() {         
+        ~CacheProviderDistributedDecorator() {         
             Dispose(false);
         }
         

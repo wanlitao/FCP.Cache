@@ -128,11 +128,17 @@ namespace FCP.Cache
                 if (disposing)
                 {
                     // TODO: 释放托管状态(托管对象)。
+                    DisposeInternal();
                 }
                 disposedValue = true;
             }
         }
-        
+
+        protected virtual void DisposeInternal()
+        {
+
+        }
+
         ~BaseCacheProvider() {
             Dispose(false);
         }

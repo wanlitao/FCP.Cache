@@ -273,16 +273,13 @@ namespace FCP.Cache.Service
         #endregion
 
         #region IDisposable Support
-        protected override void Dispose(bool disposing)
+        protected override void DisposeInternal()
         {
-            if (disposing)
+            foreach (var cacheProvider in CacheProviders)
             {
-                foreach(var cacheProvider in CacheProviders)
-                {
-                    cacheProvider.Dispose();
-                }
+                cacheProvider.Dispose();
             }
-            base.Dispose(disposing);
+            base.DisposeInternal();
         }
         #endregion
     }

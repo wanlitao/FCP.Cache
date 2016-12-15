@@ -18,7 +18,7 @@
         #region convert distributed cache
         public static IDistributedCacheProvider AsDistributedCache(this ICacheProvider<string> cacheProvider)
         {
-            return new CacheProviderDistributedWrapper(cacheProvider);
+            return new CacheProviderDistributedDecorator(cacheProvider);
         }
         #endregion
     }
